@@ -24,6 +24,11 @@ describe("<RangeSlider>", () => {
 
     afterEach(() => testsContainerElement.remove());
 
+    it("does not render progress bar if handles are equal", () => {
+        const slider = renderSlider(<RangeSlider value={[4, 4]} />);
+        assert.isFalse(slider.find(`.${Classes.SLIDER}-progress`).exists());
+    });
+
     it("throws error if range value contains null", () => {
         assert.throws(() => renderSlider(<RangeSlider value={[null, 5]} />));
         assert.throws(() => renderSlider(<RangeSlider value={[100, null]} />));

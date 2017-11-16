@@ -13,12 +13,6 @@ const globalName = (id) => upperFirst(camelCase(id));
 
 const DEFAULT_CONFIG = {
     devtool: "source-map",
-    module: {
-        loaders: [
-            // always provide JSON loader to support importing data files (see moment-timezone)
-            { loader: "json-loader", test: /\.json$/ },
-        ],
-    },
     plugins: [
         new webpack.DefinePlugin({
             "process.env": {
@@ -26,29 +20,29 @@ const DEFAULT_CONFIG = {
             },
         }),
     ],
-    resolve: { extensions: ["", ".js"] },
+    resolve: { extensions: [".js"] },
 };
 
 // Default webpack config options with support for TypeScript files
 const TYPESCRIPT_CONFIG = {
     devtool: "source-map",
     module: {
-        loaders: [
-            { loader: "json-loader", test: /\.json$/ },
-            { loader: "source-map-loader", test: /\.js$/ },
-            { loader: "ts-loader", test: /\.tsx?$/ },
+        rules: [
+            { test: /\.js$/, use: "source-map-loader" },
+            {
+                test: /\.tsx?$/,
+                use: [{
+                    loader: "ts-loader",
+                    options: {
+                        // do not emit declarations since we are bundling
+                        compilerOptions: { declaration: false },
+                    },
+                }],
+            },
         ],
     },
     resolve: {
-        extensions: ["", ".js", ".ts", ".tsx"],
-    },
-    ts: {
-        compilerOptions: {
-            // do not emit declarations since we are bundling
-            declaration: false,
-            // ensure that only @types from this project are used (instead of from local symlinked blueprint)
-            typeRoots: ["node_modules/@types"],
-        },
+        extensions: [".js", ".ts", ".tsx"],
     },
 };
 
@@ -61,6 +55,7 @@ const EXTERNALS = {
     "es6-shim": "window",
     "jquery": "$",
     "moment": "moment",
+    "moment-timezone": "moment",
     "react": "React",
     "react-addons-css-transition-group": "React.addons.CSSTransitionGroup",
     "react-day-picker": "DayPicker",
@@ -96,10 +91,10 @@ module.exports = {
             },
             externals: EXTERNALS,
             output: {
-                filename: `${project.id}.bundle.js`,
+                filename: `[name].bundle.js`,
                 library: ["Blueprint", globalName(project.id)],
                 libraryTarget: "umd",
-                path: path.join(project.cwd, "dist"),
+                path: path.resolve(project.cwd, "dist"),
             },
         }, DEFAULT_CONFIG);
 
@@ -115,7 +110,7 @@ module.exports = {
         return Object.assign({}, TYPESCRIPT_CONFIG, {
             devtool: "inline-source-map",
             entry: {
-                [project.id]: `./${project.cwd}/test/index`,
+                [project.id]: `./${project.cwd}/test/index.ts`,
             },
             // these externals necessary for Enzyme harness
             externals: {
@@ -123,22 +118,34 @@ module.exports = {
                 "react/addons": true,
                 "react/lib/ExecutionEnvironment": true,
                 "react/lib/ReactContext": true,
+                "react-addons-test-utils": true,
             },
-            module: Object.assign({}, TYPESCRIPT_CONFIG.module, {
-                postLoaders: [
-                    {
-                        loader: "istanbul-instrumenter",
-                        test: /src\/.*\.tsx?$/,
-                    },
-                ],
-            }),
-            resolve: Object.assign({}, TYPESCRIPT_CONFIG.resolve, {
-                alias: {
-                    // webpack will load react twice because of symlinked node modules
-                    // this makes it only use one copy of React
-                    react: path.resolve(`./${project.cwd}/node_modules/react`),
-                },
-            }),
+            module: {
+                rules: TYPESCRIPT_CONFIG.module.rules.concat({
+                    enforce: "post",
+                    test: /src\/.*\.tsx?$/,
+                    use: "istanbul-instrumenter-loader",
+                }),
+            },
+            plugins: [
+                function() {
+                    this.plugin("done", function(stats) {
+                        if (stats.compilation.errors.length > 0) {
+                            // tslint:disable-next-line:no-console
+                            console.error("ERRORS in compilation. See above.");
+
+                            // Pretend no assets were generated. This prevents the tests
+                            // from running making it clear that there were errors.
+                            stats.stats = [{
+                                assets: [],
+                                toJson: function () { return this; }
+                            }];
+                        }
+                        return stats;
+                    });
+                }
+            ],
+            bail: true,
         });
     },
 
@@ -159,18 +166,11 @@ module.exports = {
             output: {
                 filename: `${project.id}.js`,
                 library: project.webpack.global,
-                path: `${project.cwd}/${project.webpack.dest}`,
+                path: path.resolve(project.cwd, project.webpack.dest),
             },
         }, TYPESCRIPT_CONFIG, {
             plugins: DEFAULT_CONFIG.plugins,
         });
-
-        if (project.webpack.localResolve != null) {
-            returnVal.resolve.alias = project.webpack.localResolve.reduce((obj, pkg) => {
-                obj[pkg] = path.resolve(`./${project.cwd}/node_modules/${pkg}`);
-                return obj;
-            }, {});
-        }
 
         return returnVal;
     },

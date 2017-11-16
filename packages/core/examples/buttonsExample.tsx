@@ -41,7 +41,7 @@ export class ButtonsExample extends BaseExample<IButtonsExampleState> {
     private wiggleTimeoutId: number;
 
     public componentWillUnmount() {
-        clearTimeout(this.wiggleTimeoutId);
+        window.clearTimeout(this.wiggleTimeoutId);
     }
 
     protected renderExample() {
@@ -120,8 +120,8 @@ export class ButtonsExample extends BaseExample<IButtonsExampleState> {
     }
 
     private beginWiggling = () => {
-        clearTimeout(this.wiggleTimeoutId);
+        window.clearTimeout(this.wiggleTimeoutId);
         this.setState({ wiggling: true });
-        this.wiggleTimeoutId = setTimeout(() => this.setState({ wiggling: false }), 300);
+        this.wiggleTimeoutId = window.setTimeout(() => this.setState({ wiggling: false }), 300);
     };
 }

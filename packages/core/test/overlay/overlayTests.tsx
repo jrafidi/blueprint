@@ -216,7 +216,7 @@ describe("<Overlay>", () => {
             );
         });
 
-        it("returns focus to overlay after clicking the backdrop if enforceFocus=true", done => {
+        it.skip("returns focus to overlay after clicking the backdrop if enforceFocus=true", done => {
             wrapper = mount(
                 <Overlay enforceFocus={true} canOutsideClickClose={false} inline={true} isOpen={true}>
                     {createOverlayContents()}

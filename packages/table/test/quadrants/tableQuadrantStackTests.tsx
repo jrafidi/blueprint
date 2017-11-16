@@ -124,7 +124,7 @@ describe("TableQuadrantStack", () => {
         const containerHeight = GRID_HEIGHT - 1;
         const containerWidth = GRID_WIDTH - 1;
 
-        const containerStyle = {
+        const containerStyle: React.CSSProperties = {
             height: containerHeight,
             overflow: "auto",
             width: containerWidth,
@@ -162,7 +162,7 @@ describe("TableQuadrantStack", () => {
         const containerHeight = GRID_HEIGHT * 2;
         const containerWidth = GRID_WIDTH * 2;
 
-        const containerStyle = {
+        const containerStyle: React.CSSProperties = {
             height: containerHeight,
             overflow: "auto",
             width: containerWidth,
