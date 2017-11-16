@@ -11,6 +11,7 @@
 @import "./interactions/interactions";
 @import "./layers/layers";
 @import "./quadrants/quadrants";
+@import "~react-virtualized/styles.css";
 
 $body-z-index: $pt-z-index-content !default;
 $column-z-index: $body-z-index + 1 !default;

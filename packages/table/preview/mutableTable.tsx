@@ -24,12 +24,12 @@ import {
     ColumnHeaderCell,
     EditableCell,
     EditableName,
+    FastTable,
     IStyledRegionGroup,
     JSONFormat,
     RegionCardinality,
     Regions,
     RowHeaderCell,
-    Table,
     TableLoadingOption,
     TruncatedFormat,
     TruncatedPopoverMode,
@@ -272,11 +272,11 @@ const DEFAULT_STATE: IMutableTableState = {
 export class MutableTable extends React.Component<{}, IMutableTableState> {
     private store = new DenseGridMutableStore<any>();
 
-    private tableInstance: Table;
+    private tableInstance: FastTable;
     private stateStore: LocalStore<IMutableTableState>;
 
     private refHandlers = {
-        table: (ref: Table) => (this.tableInstance = ref),
+        table: (ref: FastTable) => (this.tableInstance = ref),
     };
 
     public constructor(props: any, context?: any) {
@@ -345,7 +345,7 @@ export class MutableTable extends React.Component<{}, IMutableTableState> {
 
     private renderTable() {
         return (
-            <Table
+            <FastTable
                 allowMultipleSelection={this.state.enableMultiSelection}
                 enableFocus={this.state.showFocusCell}
                 fillBodyWithGhostCells={this.state.showGhostCells}
@@ -377,7 +377,7 @@ export class MutableTable extends React.Component<{}, IMutableTableState> {
                 useInteractionBar={this.state.showTableInteractionBar}
             >
                 {this.renderColumns()}
-            </Table>
+            </FastTable>
         );
     }
 
@@ -982,21 +982,21 @@ export class MutableTable extends React.Component<{}, IMutableTableState> {
                 return;
         }
 
-        this.tableInstance.scrollToRegion(region);
+        // this.tableInstance.scrollToRegion(region);
     };
 
     private handleResizeRowsByTallestCellButtonClick = () => {
-        this.tableInstance.resizeRowsByTallestCell();
+        // this.tableInstance.resizeRowsByTallestCell();
     };
 
     private handleResizeRowsByApproxHeightButtonClick = () => {
-        this.tableInstance.resizeRowsByApproximateHeight(this.getCellText);
+        // this.tableInstance.resizeRowsByApproximateHeight(this.getCellText);
     };
 
-    private getCellText = (rowIndex: number, columnIndex: number) => {
-        const content = this.store.get(rowIndex, columnIndex);
-        return this.state.cellContent === CellContent.LARGE_JSON ? JSON.stringify(content) : content;
-    };
+    // private getCellText = (rowIndex: number, columnIndex: number) => {
+    //     const content = this.store.get(rowIndex, columnIndex);
+    //     return this.state.cellContent === CellContent.LARGE_JSON ? JSON.stringify(content) : content;
+    // };
 
     // State updates
     // =============

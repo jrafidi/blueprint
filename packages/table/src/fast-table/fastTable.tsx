@@ -7,7 +7,7 @@
 import { AbstractComponent, Hotkey, Hotkeys, HotkeysTarget, IHotkeysProps, IProps } from "@blueprintjs/core";
 import * as classNames from "classnames";
 import * as React from "react";
-import { AutoSizer, MultiGrid } from "react-virtualized";
+import { AutoSizer, GridCellProps, Index, MultiGrid } from "react-virtualized";
 
 import { Column, IColumnProps } from "../column";
 import { IFocusedCellCoordinates } from "../common/cell";
@@ -25,7 +25,7 @@ import { ISelectedRegionTransform } from "../interactions/selectable";
 import { GuideLayer } from "../layers/guides";
 import { IRegion, IStyledRegionGroup, RegionCardinality, SelectionModes, TableLoadingOption } from "../regions";
 
-export interface ITableProps extends IProps, IRowHeights, IColumnWidths {
+export interface IFastTableProps extends IProps, IRowHeights, IColumnWidths {
     /**
      * If `false`, only a single region of a single column/row/cell may be
      * selected at one time. Using `ctrl` or `meta` key will have no effect,
@@ -288,7 +288,7 @@ export interface ITableProps extends IProps, IRowHeights, IColumnWidths {
     useInteractionBar?: boolean;
 }
 
-export interface ITableState {
+export interface IFastTableState {
     /**
      * An array of column widths. These are initialized from the column props
      * and updated when the user drags column header resize handles.
@@ -307,6 +307,16 @@ export interface ITableState {
      * the user is dragging a resize handle.
      */
     isLayoutLocked?: boolean;
+
+    /**
+     * The number of frozen columns, clamped to [0, num <Column>s].
+     */
+    numFrozenColumnsClamped?: number;
+
+    /**
+     * The number of frozen rows, clamped to [0, numRows].
+     */
+    numFrozenRowsClamped?: number;
 
     /**
      * An array of row heights. These are initialized updated when the user
@@ -333,8 +343,8 @@ export interface ITableState {
 }
 
 @HotkeysTarget
-export class Table extends AbstractComponent<ITableProps, ITableState> {
-    public static defaultProps: ITableProps = {
+export class FastTable extends AbstractComponent<IFastTableProps, IFastTableState> {
+    public static defaultProps: IFastTableProps = {
         allowMultipleSelection: true,
         defaultColumnWidth: 150,
         defaultRowHeight: 20,
@@ -366,13 +376,13 @@ export class Table extends AbstractComponent<ITableProps, ITableState> {
     private childrenArray: Array<React.ReactElement<IColumnProps>>;
     private columnIdToIndex: { [key: string]: number };
 
-    public constructor(props: ITableProps, context?: any) {
+    public constructor(props: IFastTableProps, context?: any) {
         super(props, context);
 
         const { children, columnWidths, defaultRowHeight, defaultColumnWidth, numRows, rowHeights } = this.props;
 
         this.childrenArray = React.Children.toArray(children) as Array<React.ReactElement<IColumnProps>>;
-        this.columnIdToIndex = Table.createColumnIdIndex(this.childrenArray);
+        this.columnIdToIndex = FastTable.createColumnIdIndex(this.childrenArray);
 
         // Create height/width arrays using the lengths from props and
         // children, the default values from props, and finally any sparse
@@ -387,6 +397,8 @@ export class Table extends AbstractComponent<ITableProps, ITableState> {
         this.state = {
             columnWidths: newColumnWidths,
             isLayoutLocked: false,
+            numFrozenColumnsClamped: 0,
+            numFrozenRowsClamped: 0,
             rowHeights: newRowHeights,
             selectedRegions,
         };
@@ -395,7 +407,7 @@ export class Table extends AbstractComponent<ITableProps, ITableState> {
     // React lifecycle
     // ===============
 
-    public componentWillReceiveProps(nextProps: ITableProps) {
+    public componentWillReceiveProps(nextProps: IFastTableProps) {
         super.componentWillReceiveProps(nextProps);
 
         const { children, columnWidths, defaultColumnWidth, defaultRowHeight, numRows, rowHeights } = nextProps;
@@ -424,7 +436,7 @@ export class Table extends AbstractComponent<ITableProps, ITableState> {
         newRowHeights = Utils.assignSparseValues(newRowHeights, rowHeights);
 
         this.childrenArray = newChildArray;
-        this.columnIdToIndex = Table.createColumnIdIndex(this.childrenArray);
+        this.columnIdToIndex = FastTable.createColumnIdIndex(this.childrenArray);
         this.setState({
             columnWidths: newColumnWidths,
             rowHeights: newRowHeights,
@@ -433,7 +445,7 @@ export class Table extends AbstractComponent<ITableProps, ITableState> {
 
     public render() {
         const { className, numRows } = this.props;
-        const { horizontalGuides, verticalGuides } = this.state;
+        const { horizontalGuides, verticalGuides, numFrozenColumnsClamped, numFrozenRowsClamped } = this.state;
 
         const classes = classNames(
             Classes.TABLE_CONTAINER,
@@ -451,23 +463,42 @@ export class Table extends AbstractComponent<ITableProps, ITableState> {
                     horizontalGuides={horizontalGuides}
                 />
                 <AutoSizer>
-                    <MultiGrid />
+                    {({ width, height }) => (
+                        <MultiGrid
+                            enableFixedColumnScroll={true}
+                            enableFixedRowScroll={true}
+                            width={width}
+                            height={height}
+                            fixedColumnCount={1 + numFrozenColumnsClamped}
+                            fixedRowCount={1 + numFrozenRowsClamped}
+                            style={{}}
+                            styleBottomLeftGrid={{}}
+                            styleBottomRightGrid={{}}
+                            styleTopLeftGrid={{}}
+                            styleTopRightGrid={{}}
+                            rowHeight={this.getRowHeight}
+                            rowCount={numRows}
+                            cellRenderer={this.renderCell}
+                            columnCount={this.childrenArray.length}
+                            columnWidth={this.getColumnWidth}
+                        />
+                    )}
                 </AutoSizer>
             </div>
         );
     }
 
     public renderHotkeys(): React.ReactElement<IHotkeysProps> {
-        const hotkeys = [
-            this.maybeRenderCopyHotkey(),
-            this.maybeRenderSelectAllHotkey(),
-            this.maybeRenderFocusHotkeys(),
-            this.maybeRenderSelectionResizeHotkeys(),
+        const hotkeys: Hotkey[] = [
+            //     this.maybeRenderCopyHotkey(),
+            //     this.maybeRenderSelectAllHotkey(),
+            //     this.maybeRenderFocusHotkeys(),
+            //     this.maybeRenderSelectionResizeHotkeys(),
         ];
         return <Hotkeys>{hotkeys.filter(element => element !== undefined)}</Hotkeys>;
     }
 
-    protected validateProps(props: ITableProps & { children: React.ReactNode }) {
+    protected validateProps(props: IFastTableProps & { children: React.ReactNode }) {
         const { children, columnWidths, numFrozenColumns, numFrozenRows, numRows, rowHeights } = props;
         const numColumns = React.Children.count(children);
 
@@ -513,6 +544,41 @@ export class Table extends AbstractComponent<ITableProps, ITableState> {
         }
     }
 
+    private renderCell = (cellProps: GridCellProps) => {
+        let content: JSX.Element;
+        if (cellProps.columnIndex === 0 && cellProps.rowIndex === 0) {
+            content = <span />;
+        } else if (cellProps.columnIndex === 0) {
+            content = this.props.renderRowHeader(cellProps.rowIndex - 1);
+        } else if (cellProps.rowIndex === 0) {
+            const colProps = this.getColumnProps(cellProps.columnIndex - 1);
+            content = colProps.renderColumnHeader(cellProps.columnIndex - 1);
+        } else {
+            const colProps = this.getColumnProps(cellProps.columnIndex - 1);
+            content = colProps.renderCell(cellProps.rowIndex - 1, cellProps.columnIndex - 1);
+        }
+
+        return (
+            <div style={cellProps.style} key={cellProps.key}>
+                {content}
+            </div>
+        );
+    };
+
+    private getRowHeight = ({ index }: Index) => {
+        if (index === 0) {
+            return 60;
+        }
+        return this.state.rowHeights[index - 1];
+    };
+
+    private getColumnWidth = ({ index }: Index) => {
+        if (index === 0) {
+            return 60;
+        }
+        return this.state.columnWidths[index - 1];
+    };
+
     private getColumnProps(columnIndex: number) {
         const column = this.childrenArray[columnIndex] as React.ReactElement<IColumnProps>;
         return column.props;
@@ -521,146 +587,146 @@ export class Table extends AbstractComponent<ITableProps, ITableState> {
     // Hotkeys
     // =======
 
-    private maybeRenderCopyHotkey() {
-        const { getCellClipboardData } = this.props;
-        if (getCellClipboardData != null) {
-            return (
-                <Hotkey
-                    key="copy-hotkey"
-                    label="Copy selected table cells"
-                    group="Table"
-                    combo="mod+c"
-                    onKeyDown={this.handleCopy}
-                />
-            );
-        } else {
-            return undefined;
-        }
-    }
+    // private maybeRenderCopyHotkey() {
+    //     const { getCellClipboardData } = this.props;
+    //     if (getCellClipboardData != null) {
+    //         return (
+    //             <Hotkey
+    //                 key="copy-hotkey"
+    //                 label="Copy selected table cells"
+    //                 group="Table"
+    //                 combo="mod+c"
+    //                 onKeyDown={this.handleCopy}
+    //             />
+    //         );
+    //     } else {
+    //         return undefined;
+    //     }
+    // }
 
-    private maybeRenderSelectionResizeHotkeys() {
-        const { allowMultipleSelection, selectionModes } = this.props;
-        const isSomeSelectionModeEnabled = selectionModes.length > 0;
+    // private maybeRenderSelectionResizeHotkeys() {
+    //     const { allowMultipleSelection, selectionModes } = this.props;
+    //     const isSomeSelectionModeEnabled = selectionModes.length > 0;
 
-        if (allowMultipleSelection && isSomeSelectionModeEnabled) {
-            return [
-                <Hotkey
-                    key="resize-selection-up"
-                    label="Resize selection upward"
-                    group="Table"
-                    combo="shift+up"
-                    onKeyDown={this.handleSelectionResizeUp}
-                />,
-                <Hotkey
-                    key="resize-selection-down"
-                    label="Resize selection downward"
-                    group="Table"
-                    combo="shift+down"
-                    onKeyDown={this.handleSelectionResizeDown}
-                />,
-                <Hotkey
-                    key="resize-selection-left"
-                    label="Resize selection leftward"
-                    group="Table"
-                    combo="shift+left"
-                    onKeyDown={this.handleSelectionResizeLeft}
-                />,
-                <Hotkey
-                    key="resize-selection-right"
-                    label="Resize selection rightward"
-                    group="Table"
-                    combo="shift+right"
-                    onKeyDown={this.handleSelectionResizeRight}
-                />,
-            ];
-        } else {
-            return undefined;
-        }
-    }
+    //     if (allowMultipleSelection && isSomeSelectionModeEnabled) {
+    //         return [
+    //             <Hotkey
+    //                 key="resize-selection-up"
+    //                 label="Resize selection upward"
+    //                 group="Table"
+    //                 combo="shift+up"
+    //                 onKeyDown={this.handleSelectionResizeUp}
+    //             />,
+    //             <Hotkey
+    //                 key="resize-selection-down"
+    //                 label="Resize selection downward"
+    //                 group="Table"
+    //                 combo="shift+down"
+    //                 onKeyDown={this.handleSelectionResizeDown}
+    //             />,
+    //             <Hotkey
+    //                 key="resize-selection-left"
+    //                 label="Resize selection leftward"
+    //                 group="Table"
+    //                 combo="shift+left"
+    //                 onKeyDown={this.handleSelectionResizeLeft}
+    //             />,
+    //             <Hotkey
+    //                 key="resize-selection-right"
+    //                 label="Resize selection rightward"
+    //                 group="Table"
+    //                 combo="shift+right"
+    //                 onKeyDown={this.handleSelectionResizeRight}
+    //             />,
+    //         ];
+    //     } else {
+    //         return undefined;
+    //     }
+    // }
 
-    private maybeRenderFocusHotkeys() {
-        const { enableFocus } = this.props;
-        if (enableFocus != null) {
-            return [
-                <Hotkey
-                    key="move left"
-                    label="Move focus cell left"
-                    group="Table"
-                    combo="left"
-                    onKeyDown={this.handleFocusMoveLeft}
-                />,
-                <Hotkey
-                    key="move right"
-                    label="Move focus cell right"
-                    group="Table"
-                    combo="right"
-                    onKeyDown={this.handleFocusMoveRight}
-                />,
-                <Hotkey
-                    key="move up"
-                    label="Move focus cell up"
-                    group="Table"
-                    combo="up"
-                    onKeyDown={this.handleFocusMoveUp}
-                />,
-                <Hotkey
-                    key="move down"
-                    label="Move focus cell down"
-                    group="Table"
-                    combo="down"
-                    onKeyDown={this.handleFocusMoveDown}
-                />,
-                <Hotkey
-                    key="move tab"
-                    label="Move focus cell tab"
-                    group="Table"
-                    combo="tab"
-                    onKeyDown={this.handleFocusMoveRightInternal}
-                    allowInInput={true}
-                />,
-                <Hotkey
-                    key="move shift-tab"
-                    label="Move focus cell shift tab"
-                    group="Table"
-                    combo="shift+tab"
-                    onKeyDown={this.handleFocusMoveLeftInternal}
-                    allowInInput={true}
-                />,
-                <Hotkey
-                    key="move enter"
-                    label="Move focus cell enter"
-                    group="Table"
-                    combo="enter"
-                    onKeyDown={this.handleFocusMoveDownInternal}
-                    allowInInput={true}
-                />,
-                <Hotkey
-                    key="move shift-enter"
-                    label="Move focus cell shift enter"
-                    group="Table"
-                    combo="shift+enter"
-                    onKeyDown={this.handleFocusMoveUpInternal}
-                    allowInInput={true}
-                />,
-            ];
-        } else {
-            return [];
-        }
-    }
+    // private maybeRenderFocusHotkeys() {
+    //     const { enableFocus } = this.props;
+    //     if (enableFocus != null) {
+    //         return [
+    //             <Hotkey
+    //                 key="move left"
+    //                 label="Move focus cell left"
+    //                 group="Table"
+    //                 combo="left"
+    //                 onKeyDown={this.handleFocusMoveLeft}
+    //             />,
+    //             <Hotkey
+    //                 key="move right"
+    //                 label="Move focus cell right"
+    //                 group="Table"
+    //                 combo="right"
+    //                 onKeyDown={this.handleFocusMoveRight}
+    //             />,
+    //             <Hotkey
+    //                 key="move up"
+    //                 label="Move focus cell up"
+    //                 group="Table"
+    //                 combo="up"
+    //                 onKeyDown={this.handleFocusMoveUp}
+    //             />,
+    //             <Hotkey
+    //                 key="move down"
+    //                 label="Move focus cell down"
+    //                 group="Table"
+    //                 combo="down"
+    //                 onKeyDown={this.handleFocusMoveDown}
+    //             />,
+    //             <Hotkey
+    //                 key="move tab"
+    //                 label="Move focus cell tab"
+    //                 group="Table"
+    //                 combo="tab"
+    //                 onKeyDown={this.handleFocusMoveRightInternal}
+    //                 allowInInput={true}
+    //             />,
+    //             <Hotkey
+    //                 key="move shift-tab"
+    //                 label="Move focus cell shift tab"
+    //                 group="Table"
+    //                 combo="shift+tab"
+    //                 onKeyDown={this.handleFocusMoveLeftInternal}
+    //                 allowInInput={true}
+    //             />,
+    //             <Hotkey
+    //                 key="move enter"
+    //                 label="Move focus cell enter"
+    //                 group="Table"
+    //                 combo="enter"
+    //                 onKeyDown={this.handleFocusMoveDownInternal}
+    //                 allowInInput={true}
+    //             />,
+    //             <Hotkey
+    //                 key="move shift-enter"
+    //                 label="Move focus cell shift enter"
+    //                 group="Table"
+    //                 combo="shift+enter"
+    //                 onKeyDown={this.handleFocusMoveUpInternal}
+    //                 allowInInput={true}
+    //             />,
+    //         ];
+    //     } else {
+    //         return [];
+    //     }
+    // }
 
-    private maybeRenderSelectAllHotkey() {
-        if (this.isSelectionModeEnabled(RegionCardinality.FULL_TABLE)) {
-            return (
-                <Hotkey
-                    key="select-all-hotkey"
-                    label="Select all"
-                    group="Table"
-                    combo="mod+a"
-                    onKeyDown={this.handleSelectAllHotkey}
-                />
-            );
-        } else {
-            return undefined;
-        }
-    }
+    // private maybeRenderSelectAllHotkey() {
+    //     if (this.isSelectionModeEnabled(RegionCardinality.FULL_TABLE)) {
+    //         return (
+    //             <Hotkey
+    //                 key="select-all-hotkey"
+    //                 label="Select all"
+    //                 group="Table"
+    //                 combo="mod+a"
+    //                 onKeyDown={this.handleSelectAllHotkey}
+    //             />
+    //         );
+    //     } else {
+    //         return undefined;
+    //     }
+    // }
 }

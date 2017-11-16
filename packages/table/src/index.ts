@@ -53,3 +53,5 @@ export {
 } from "./regions";
 
 export { ITableProps, Table } from "./table";
+
+export { IFastTableProps, FastTable } from "./fast-table/fastTable";

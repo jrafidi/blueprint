@@ -25,7 +25,7 @@ for all borders with minimal duplication. See the bottom of this file.
   }
 
   .bp-table-header {
-    box-shadow: $border-bottom-default;
+    box-shadow: $inset-border-bottom-default, $inset-border-right-default;
   }
 
   .bp-table-cell {

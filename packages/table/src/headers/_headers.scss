@@ -37,6 +37,7 @@ $dark-selectable-header-menu-selected-hover-background:
   position: relative;
   text-overflow: ellipsis;
   user-select: none;
+  height: 100%;
 
   &::before {
     // allow row/column headers to define bottom and right borders, see borders.scss
