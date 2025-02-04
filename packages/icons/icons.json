@@ -4625,5 +4625,12 @@
         "tags": "blockage, sign, road, stop",
         "group": "miscellaneous",
         "codepoint": 62357
+    },
+    {
+        "displayName": "Annoucement",
+        "iconName": "annoucement",
+        "tags": "speaker, megaphone, loud, noise",
+        "group": "miscellaneous",
+        "codepoint": 62358
     }
 ]
