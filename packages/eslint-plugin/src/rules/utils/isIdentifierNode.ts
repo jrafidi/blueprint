@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,8 @@
  * limitations under the License.
  */
 
-/* eslint-disable sort-keys */
+import { TSESTree } from "@typescript-eslint/utils";
 
-/**
- * The four basic intents.
- */
-export const Intent = {
-    NONE: "none" as const,
-    PRIMARY: "primary" as const,
-    SUCCESS: "success" as const,
-    WARNING: "warning" as const,
-    DANGER: "danger" as const,
-};
-export type Intent = (typeof Intent)[keyof typeof Intent];
+export function isIdentifierNode(node: TSESTree.Node): node is TSESTree.Identifier {
+    return node.type === TSESTree.AST_NODE_TYPES.Identifier;
+}
