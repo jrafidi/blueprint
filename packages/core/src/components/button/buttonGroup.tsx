@@ -17,8 +17,13 @@
 import classNames from "classnames";
 import * as React from "react";
 
-import { Alignment, Classes } from "../../common";
-import { ALIGN_TEXT_LEFT, ALIGN_TEXT_RIGHT } from "../../common/errors";
+import { Alignment, type ButtonVariant, Classes } from "../../common";
+import {
+    ALIGN_TEXT_LEFT,
+    ALIGN_TEXT_RIGHT,
+    BUTTON_GROUP_WARN_MINIMAL,
+    BUTTON_GROUP_WARN_OUTLINED,
+} from "../../common/errors";
 import { DISPLAYNAME_PREFIX, type HTMLDivProps, type Props } from "../../common/props";
 import { useValidateProps } from "../../hooks/useValidateProps";
 
@@ -44,6 +49,7 @@ export interface ButtonGroupProps extends Props, HTMLDivProps, React.RefAttribut
     /**
      * Whether the child buttons should appear with minimal styling.
      *
+     * @deprecated use `variant="minimal"` instead
      * @default false
      */
     minimal?: boolean;
@@ -51,9 +57,17 @@ export interface ButtonGroupProps extends Props, HTMLDivProps, React.RefAttribut
     /**
      * Whether the child buttons should use outlined styles.
      *
+     * @deprecated use `variant="outlined"` instead
      * @default false
      */
     outlined?: boolean;
+
+    /**
+     * Visual style variant for the child buttons.
+     *
+     * @default "solid"
+     */
+    variant?: ButtonVariant;
 
     /**
      * Whether the child buttons should appear with large styling.
@@ -79,7 +93,19 @@ export interface ButtonGroupProps extends Props, HTMLDivProps, React.RefAttribut
  */
 export const ButtonGroup: React.FC<ButtonGroupProps> = React.forwardRef<HTMLDivElement, ButtonGroupProps>(
     (props, ref) => {
-        const { alignText, className, fill, minimal, outlined, large, vertical, ...htmlProps } = props;
+        const {
+            alignText,
+            className,
+            fill,
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
+            minimal,
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
+            outlined,
+            large,
+            variant = "solid",
+            vertical,
+            ...htmlProps
+        } = props;
 
         useValidateProps(() => {
             // eslint-disable-next-line @typescript-eslint/no-deprecated
@@ -90,18 +116,23 @@ export const ButtonGroup: React.FC<ButtonGroupProps> = React.forwardRef<HTMLDivE
             if (alignText === Alignment.RIGHT) {
                 console.warn(ALIGN_TEXT_RIGHT);
             }
-        }, [alignText]);
+            if (minimal != null) {
+                console.warn(BUTTON_GROUP_WARN_MINIMAL);
+            }
+            if (outlined != null) {
+                console.warn(BUTTON_GROUP_WARN_OUTLINED);
+            }
+        }, [alignText, minimal, outlined]);
 
         const buttonGroupClasses = classNames(
             Classes.BUTTON_GROUP,
             {
                 [Classes.FILL]: fill,
                 [Classes.LARGE]: large,
-                [Classes.MINIMAL]: minimal,
-                [Classes.OUTLINED]: outlined,
                 [Classes.VERTICAL]: vertical,
             },
             Classes.alignmentClass(alignText),
+            Classes.variantClass(variant, { minimal, outlined }),
             className,
         );
         return (

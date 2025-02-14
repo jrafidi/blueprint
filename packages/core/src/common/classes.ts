@@ -15,6 +15,7 @@
  */
 
 import { Alignment } from "./alignment";
+import type { ButtonVariant } from "./buttonVariant";
 import { Elevation } from "./elevation";
 import { Intent } from "./intent";
 import { Position } from "./position";
@@ -442,4 +443,22 @@ export function positionClass(position: Position | undefined) {
         return undefined;
     }
     return `${NS}-position-${position}`;
+}
+
+export function variantClass(
+    variant: ButtonVariant,
+    legacyProps: Record<"minimal" | "outlined", boolean | undefined>,
+): string | Record<string, boolean> {
+    // variant takes precedence over minimal and outlined
+    if (variant === "outlined") {
+        return OUTLINED;
+    }
+    if (variant === "minimal") {
+        return MINIMAL;
+    }
+    const { minimal = false, outlined = false } = legacyProps;
+    return {
+        [MINIMAL]: minimal,
+        [OUTLINED]: outlined,
+    };
 }

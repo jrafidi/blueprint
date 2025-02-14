@@ -33,6 +33,11 @@ export const ALIGN_INDICATOR_CENTER =
 export const ALIGN_TEXT_LEFT = ns + ` alignText="left" is deprecated. Please use alignText="start" instead.`;
 export const ALIGN_TEXT_RIGHT = ns + ` alignText="right" is deprecated. Please use alignText="end" instead.`;
 
+export const BUTTON_WARN_MINIMAL = ns + ` <Button> minimal is deprecated. Please use variant="minimal".`;
+export const BUTTON_GROUP_WARN_MINIMAL = ns + ` <ButtonGroup> minimal is deprecated. Please use variant="minimal".`;
+export const BUTTON_WARN_OUTLINED = ns + ` <Button> outlined is deprecated. Please use variant="outlined".`;
+export const BUTTON_GROUP_WARN_OUTLINED = ns + ` <ButtonGroup> outlined is deprecated. Please use variant="outlined".`;
+
 export const HOTKEYS_HOTKEY_CHILDREN = ns + ` <Hotkeys> only accepts <Hotkey> children.`;
 
 export const HOTKEYS_PROVIDER_NOT_FOUND =

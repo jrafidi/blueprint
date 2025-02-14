@@ -8,6 +8,8 @@ import * as React from "react";
 import { AnchorButton, Button, Icon, Tooltip } from "@blueprintjs/core";
 import { CodeExample, type ExampleProps } from "@blueprintjs/docs-theme";
 
+/* eslint-disable @typescript-eslint/no-deprecated */
+
 export const ButtonBasicExample: React.FC<ExampleProps> = props => {
     const code = `<Button text="Click Me" />`;
     return (
@@ -33,6 +35,20 @@ export const ButtonIntentExample: React.FC<ExampleProps> = props => {
     );
 };
 
+export const ButtonVariantExample: React.FC<ExampleProps> = props => {
+    const code = dedent`
+        <Button text="Default" />
+        <Button text="Minimal" variant="minimal" />
+        <Button text="Outlined" variant="outlined" />`;
+    return (
+        <CodeExample code={code} {...props}>
+            <Button text="Default" />
+            <Button text="Minimal" variant="minimal" />
+            <Button text="Outlined" variant="outlined" />
+        </CodeExample>
+    );
+};
+
 export const ButtonMinimalExample: React.FC<ExampleProps> = props => {
     const code = dedent`
         <Button text="Minimal" minimal={true} />
@@ -51,12 +67,12 @@ export const ButtonOutlinedExample: React.FC<ExampleProps> = props => {
     const code = dedent`
         <Button text="Outlined" outlined={true} />
         <Button text="Primary" outlined={true} intent="primary" />
-        <Button text="Disabled" minimal={true} disabled={true} />`;
+        <Button text="Disabled" outlined={true} disabled={true} />`;
     return (
         <CodeExample code={code} {...props}>
             <Button text="Outlined" outlined={true} />
             <Button text="Primary" outlined={true} intent="primary" />
-            <Button text="Disabled" minimal={true} disabled={true} />
+            <Button text="Disabled" outlined={true} disabled={true} />
         </CodeExample>
     );
 };
@@ -130,15 +146,15 @@ export const ButtonIconWithTextExample: React.FC<ExampleProps> = props => {
 export const ButtonIconExample: React.FC<ExampleProps> = props => {
     const code = dedent`
         <Button icon="edit" aria-label="edit" />
-        <Button icon="share" outlined={true} aria-label="share" />
-        <Button icon="filter" intent="primary" minimal={true} aria-label="filter" />
+        <Button icon="share" variant="outlined" aria-label="share" />
+        <Button icon="filter" intent="primary" variant="minimal" aria-label="filter" />
         <Button icon="add" intent="success" aria-label="add" />
         <Button icon="trash" disabled={true} intent="danger" aria-label="delete" />`;
     return (
         <CodeExample code={code} {...props}>
             <Button icon="edit" aria-label="edit" />
-            <Button icon="share" outlined={true} aria-label="share" />
-            <Button icon="filter" intent="primary" minimal={true} aria-label="filter" />
+            <Button icon="share" variant="outlined" aria-label="share" />
+            <Button icon="filter" intent="primary" variant="minimal" aria-label="filter" />
             <Button icon="add" intent="success" aria-label="add" />
             <Button icon="trash" disabled={true} intent="danger" aria-label="delete" />
         </CodeExample>

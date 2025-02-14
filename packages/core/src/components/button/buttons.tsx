@@ -22,7 +22,7 @@ import {
     type UseInteractiveAttributesOptions,
 } from "../../accessibility/useInteractiveAttributes";
 import { Alignment, Classes, Utils } from "../../common";
-import { ALIGN_TEXT_LEFT, ALIGN_TEXT_RIGHT } from "../../common/errors";
+import { ALIGN_TEXT_LEFT, ALIGN_TEXT_RIGHT, BUTTON_WARN_MINIMAL, BUTTON_WARN_OUTLINED } from "../../common/errors";
 import { DISPLAYNAME_PREFIX, removeNonHTMLProps } from "../../common/props";
 import { useValidateProps } from "../../hooks/useValidateProps";
 import { Icon } from "../icon/icon";
@@ -83,8 +83,11 @@ function useSharedButtonAttributes<E extends HTMLAnchorElement | HTMLButtonEleme
     ref: React.Ref<E>,
     options?: UseInteractiveAttributesOptions,
 ) {
-    const { alignText, fill, large, loading = false, minimal, outlined, small } = props;
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    const { alignText, fill, large, loading = false, minimal, outlined, small, variant = "solid" } = props;
     const disabled = props.disabled || loading;
+
+    const [active, interactiveProps] = useInteractiveAttributes(!disabled, props, ref, options);
 
     useValidateProps(() => {
         // eslint-disable-next-line @typescript-eslint/no-deprecated
@@ -95,9 +98,13 @@ function useSharedButtonAttributes<E extends HTMLAnchorElement | HTMLButtonEleme
         if (alignText === Alignment.RIGHT) {
             console.warn(ALIGN_TEXT_RIGHT);
         }
-    }, [alignText]);
-
-    const [active, interactiveProps] = useInteractiveAttributes(!disabled, props, ref, options);
+        if (minimal != null) {
+            console.warn(BUTTON_WARN_MINIMAL);
+        }
+        if (outlined != null) {
+            console.warn(BUTTON_WARN_OUTLINED);
+        }
+    }, [alignText, minimal, outlined]);
 
     const className = classNames(
         Classes.BUTTON,
@@ -107,12 +114,11 @@ function useSharedButtonAttributes<E extends HTMLAnchorElement | HTMLButtonEleme
             [Classes.FILL]: fill,
             [Classes.LARGE]: large,
             [Classes.LOADING]: loading,
-            [Classes.MINIMAL]: minimal,
-            [Classes.OUTLINED]: outlined,
             [Classes.SMALL]: small,
         },
         Classes.alignmentClass(alignText),
         Classes.intentClass(props.intent),
+        Classes.variantClass(variant, { minimal, outlined }),
         props.className,
     );
 
