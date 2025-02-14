@@ -25,6 +25,7 @@ import {
     Divider,
     H5,
     Intent,
+    type Size,
     Switch,
     TextAlignment,
 } from "@blueprintjs/core";
@@ -34,7 +35,7 @@ import { IconNames } from "@blueprintjs/icons";
 import { PropCodeTooltip } from "../../common/propCodeTooltip";
 
 import { IntentSelect } from "./common/intentSelect";
-import { type Size, SizeSelect } from "./common/sizeSelect";
+import { SizeSelect } from "./common/sizeSelect";
 import { TextAlignmentSelect } from "./common/textAlignmentSelect";
 import { VariantSelect } from "./common/variantSelect";
 
@@ -48,7 +49,7 @@ export const ButtonPlaygroundExample: React.FC<ExampleProps> = props => {
     const [intent, setIntent] = React.useState<Intent>(Intent.NONE);
     const [loading, setLoading] = React.useState(false);
     const [longText, setLongText] = React.useState(false);
-    const [size, setSize] = React.useState<Size>("regular");
+    const [size, setSize] = React.useState<Size>("medium");
     const [variant, setVariant] = React.useState<ButtonVariant>("solid");
     const [wiggling, setWiggling] = React.useState(false);
 
@@ -94,7 +95,7 @@ export const ButtonPlaygroundExample: React.FC<ExampleProps> = props => {
             <VariantSelect onChange={setVariant} variant={variant} />
             <IntentSelect intent={intent} onChange={setIntent} />
             <TextAlignmentSelect align={alignText} onChange={setAlignText} />
-            <SizeSelect size={size} onChange={setSize} />
+            <SizeSelect onChange={setSize} size={size} />
             <H5>Example</H5>
             <Switch label="Icons only" checked={iconOnly} onChange={handleBooleanChange(setIconOnly)} />
             <Switch label="Long text" checked={longText} onChange={handleBooleanChange(setLongText)} />
@@ -116,10 +117,9 @@ export const ButtonPlaygroundExample: React.FC<ExampleProps> = props => {
                     fill={fill}
                     icon={IconNames.REFRESH}
                     intent={intent}
-                    large={size === "large"}
                     loading={loading}
                     onClick={beginWiggling}
-                    small={size === "small"}
+                    size={size}
                     text={wiggleButtonText}
                     variant={variant}
                 />
@@ -137,10 +137,9 @@ export const ButtonPlaygroundExample: React.FC<ExampleProps> = props => {
                     href="#core/components/buttons"
                     icon={IconNames.DUPLICATE}
                     intent={intent}
-                    large={size === "large"}
                     loading={loading}
                     rightIcon={IconNames.SHARE}
-                    small={size === "small"}
+                    size={size}
                     target="_blank"
                     text={duplicateButtonText}
                     variant={variant}

@@ -90,7 +90,7 @@ export class PanelView extends AbstractPureComponent<IPanelViewProps> {
                 className={Classes.PANEL_STACK_HEADER_BACK}
                 icon="chevron-left"
                 onClick={this.handleClose}
-                small={true}
+                size="small"
                 text={this.props.previousPanel.title}
                 title={this.props.previousPanel.htmlTitle}
                 variant="minimal"

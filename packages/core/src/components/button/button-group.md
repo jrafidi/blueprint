@@ -45,6 +45,12 @@ Use the `outlined` and `minimal` props to change the visual style of button chil
 
 @reactCodeExample ButtonGroupOutlinedMinimalExample
 
+@## Size
+
+The `size` prop can be used to control the size of all child buttons within the button group.
+
+@reactCodeExample ButtonGroupSizeExample
+
 @## Flex layout
 
 **ButtonGroup** renders a CSS flex row (or column if `vertical` is enabled) and

@@ -25,6 +25,7 @@ import {
     H5,
     Icon,
     Intent,
+    type Size,
     Switch,
     TextAlignment,
     Tooltip,
@@ -33,6 +34,7 @@ import { Example, type ExampleProps, handleBooleanChange } from "@blueprintjs/do
 import { IconNames } from "@blueprintjs/icons";
 
 import { IntentSelect } from "./common/intentSelect";
+import { SizeSelect } from "./common/sizeSelect";
 import { TextAlignmentSelect } from "./common/textAlignmentSelect";
 import { VariantSelect } from "./common/variantSelect";
 
@@ -42,6 +44,7 @@ export const ButtonGroupPlaygroundExample: React.FC<ExampleProps> = props => {
     const [iconOnly, setIconOnly] = React.useState(false);
     const [intent, setIntent] = React.useState<Intent>(Intent.NONE);
     const [large, setLarge] = React.useState(false);
+    const [size, setSize] = React.useState<Size>("medium");
     const [variant, setVariant] = React.useState<ButtonVariant>("solid");
     const [vertical, setVertical] = React.useState(false);
 
@@ -52,8 +55,9 @@ export const ButtonGroupPlaygroundExample: React.FC<ExampleProps> = props => {
             <Switch checked={large} label="Large" onChange={handleBooleanChange(setLarge)} />
             <Switch checked={vertical} label="Vertical" onChange={handleBooleanChange(setVertical)} />
             <VariantSelect onChange={setVariant} variant={variant} />
-            <IntentSelect intent={intent} label={intentLabelInfo} onChange={setIntent} />
             <TextAlignmentSelect align={alignText} onChange={setAlignText} />
+            <SizeSelect onChange={setSize} size={size} />
+            <IntentSelect intent={intent} label={intentLabelInfo} onChange={setIntent} />
             <H5>Example</H5>
             <Switch checked={iconOnly} label="Icons only" onChange={handleBooleanChange(setIconOnly)} />
         </>
@@ -64,9 +68,9 @@ export const ButtonGroupPlaygroundExample: React.FC<ExampleProps> = props => {
             <ButtonGroup
                 alignText={alignText}
                 fill={fill}
-                large={large}
                 variant={variant}
                 vertical={vertical}
+                size={size}
                 // set `minWidth` so `alignText` will have an effect when vertical
                 style={{ minWidth: 200 }}
             >

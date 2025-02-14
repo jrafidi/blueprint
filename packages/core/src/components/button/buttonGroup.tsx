@@ -17,12 +17,13 @@
 import classNames from "classnames";
 import * as React from "react";
 
-import { Alignment, type ButtonVariant, Classes } from "../../common";
+import { Alignment, type ButtonVariant, Classes, type Size } from "../../common";
 import {
     ALIGN_TEXT_LEFT,
     ALIGN_TEXT_RIGHT,
     BUTTON_GROUP_WARN_MINIMAL,
     BUTTON_GROUP_WARN_OUTLINED,
+    logDeprecatedSizeWarning,
 } from "../../common/errors";
 import { DISPLAYNAME_PREFIX, type HTMLDivProps, type Props } from "../../common/props";
 import { useValidateProps } from "../../hooks/useValidateProps";
@@ -72,9 +73,17 @@ export interface ButtonGroupProps extends Props, HTMLDivProps, React.RefAttribut
     /**
      * Whether the child buttons should appear with large styling.
      *
+     * @deprecated use `size="large"` instead.
      * @default false
      */
     large?: boolean;
+
+    /**
+     * The size of the child buttons.
+     *
+     * @default "medium"
+     */
+    size?: Size;
 
     /**
      * Whether the button group should appear with vertical styling.
@@ -101,7 +110,9 @@ export const ButtonGroup: React.FC<ButtonGroupProps> = React.forwardRef<HTMLDivE
             minimal,
             // eslint-disable-next-line @typescript-eslint/no-deprecated
             outlined,
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
             large,
+            size = "medium",
             variant = "solid",
             vertical,
             ...htmlProps
@@ -122,16 +133,17 @@ export const ButtonGroup: React.FC<ButtonGroupProps> = React.forwardRef<HTMLDivE
             if (outlined != null) {
                 console.warn(BUTTON_GROUP_WARN_OUTLINED);
             }
-        }, [alignText, minimal, outlined]);
+            logDeprecatedSizeWarning("ButtonGroup", { large });
+        }, [alignText, large, minimal, outlined]);
 
         const buttonGroupClasses = classNames(
             Classes.BUTTON_GROUP,
             {
                 [Classes.FILL]: fill,
-                [Classes.LARGE]: large,
                 [Classes.VERTICAL]: vertical,
             },
             Classes.alignmentClass(alignText),
+            Classes.sizeClass(size, { large }),
             Classes.variantClass(variant, { minimal, outlined }),
             className,
         );
