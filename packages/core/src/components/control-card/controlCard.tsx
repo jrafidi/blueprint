@@ -54,7 +54,7 @@ export interface ControlCardProps extends SupportedCardProps, SupportedControlPr
     /**
      * HTML input attributes to forward to the control `<input>` element.
      */
-    inputProps?: HTMLInputProps;
+    inputProps?: Omit<HTMLInputProps, "size">;
 
     /**
      * Whether the component should use "selected" Card styling when checked.
