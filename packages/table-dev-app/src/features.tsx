@@ -35,7 +35,7 @@ import {
     Regions,
     RowHeaderCell,
     SelectionModes,
-    Table2,
+    Table,
     Utils,
 } from "@blueprintjs/table";
 
@@ -66,7 +66,7 @@ function getTableComponent(numCols: number, numRows: number, columnProps?: any, 
     const columns = Utils.times(numCols, index => {
         return <Column key={index} {...columnPropsWithDefaults} />;
     });
-    return <Table2 {...tablePropsWithDefaults}>{columns}</Table2>;
+    return <Table {...tablePropsWithDefaults}>{columns}</Table>;
 }
 
 const renderTestMenu = () => (
@@ -107,21 +107,21 @@ class FormatsTable extends React.Component {
 
     private strings = Utils.times(FormatsTable.ROWS, () => "ABC " + Math.random() * 10000);
 
-    private formatsTable: Table2;
+    private formatsTable: Table;
 
     public render() {
-        const saveTable = (table: Table2) => {
+        const saveTable = (table: Table) => {
             this.formatsTable = table;
         };
 
         return (
-            <Table2 ref={saveTable} numRows={FormatsTable.ROWS} enableRowResizing={true}>
+            <Table ref={saveTable} numRows={FormatsTable.ROWS} enableRowResizing={true}>
                 <Column name="Default" cellRenderer={this.renderDefaultCell} />
                 <Column name="Wrapped Text" cellRenderer={this.renderDefaultCellWrapped} />
                 <Column name="JSON" cellRenderer={this.renderJSONCell} />
                 <Column name="JSON wrapped text" cellRenderer={this.renderJSONCellWrappedText} />
                 <Column name="JSON wrapped cell" cellRenderer={this.renderJSONWrappedCell} />
-            </Table2>
+            </Table>
         );
     }
 
@@ -197,7 +197,7 @@ class EditableTable extends React.Component<{}, EditableTableState> {
             <Column key={index} cellRenderer={this.renderCell} columnHeaderCellRenderer={this.renderColumnHeader} />
         ));
         return (
-            <Table2
+            <Table
                 numRows={7}
                 selectionModes={SelectionModes.COLUMNS_AND_CELLS}
                 // eslint-disable-next-line @typescript-eslint/no-deprecated
@@ -205,7 +205,7 @@ class EditableTable extends React.Component<{}, EditableTableState> {
                 enableColumnInteractionBar={true}
             >
                 {columns}
-            </Table2>
+            </Table>
         );
     }
 
@@ -341,7 +341,7 @@ class RowSelectableTable extends React.Component {
     public render() {
         return (
             <div>
-                <Table2
+                <Table
                     bodyContextMenuRenderer={bodyContextMenuRenderer}
                     numRows={7}
                     enableRowHeader={false}
@@ -352,7 +352,7 @@ class RowSelectableTable extends React.Component {
                     <Column name="Cells" />
                     <Column name="Select" />
                     <Column name="Rows" />
-                </Table2>
+                </Table>
                 <br />
                 <Button onClick={this.handleClear} intent={Intent.PRIMARY}>
                     Clear Selection
@@ -393,7 +393,7 @@ class AdjustableColumnsTable extends React.Component {
     };
 
     public render() {
-        return <Table2 numRows={7}>{this.state.columns}</Table2>;
+        return <Table numRows={7}>{this.state.columns}</Table>;
     }
 
     public componentDidMount() {
@@ -587,10 +587,10 @@ const longContentRenderCell = () => {
 
 const table8Root = ReactDOM.createRoot(document.getElementById("table-8"));
 table8Root.render(
-    <Table2 numRows={4}>
+    <Table numRows={4}>
         <Column name="My" />
         <Column name="Table" cellRenderer={longContentRenderCell} />
-    </Table2>,
+    </Table>,
 );
 
 const table9Root = ReactDOM.createRoot(document.getElementById("table-9"));
@@ -605,11 +605,11 @@ table9Root.render(
         <div style={{ zIndex: 2 }} className="stack-fill">
             <br />Z = 2
         </div>
-        <Table2 numRows={3}>
+        <Table numRows={3}>
             <Column name="A" />
             <Column name="B" />
             <Column name="C" />
-        </Table2>
+        </Table>
         <div className="stack-fill">
             <br />
             <br />
@@ -650,7 +650,7 @@ class ReorderableTableExample extends React.Component<{}, ReorderableTableExampl
 
     public render() {
         return (
-            <Table2
+            <Table
                 enableColumnReordering={true}
                 enableRowReordering={true}
                 numRows={this.state.data.length}
@@ -658,7 +658,7 @@ class ReorderableTableExample extends React.Component<{}, ReorderableTableExampl
                 onRowsReordered={this.handleRowsReordered}
             >
                 {this.state.children}
-            </Table2>
+            </Table>
         );
     }
 
@@ -694,9 +694,9 @@ table10Root.render(<ReorderableTableExample />);
 const table11Root = ReactDOM.createRoot(document.getElementById("table-11"));
 table11Root.render(
     <div style={{ height: 335, width: 300 }}>
-        <Table2 numRows={10} defaultRowHeight={30} enableGhostCells={true}>
+        <Table numRows={10} defaultRowHeight={30} enableGhostCells={true}>
             <Column columnHeaderCellRenderer={() => <ColumnHeaderCell nameRenderer={renderName} />} />
-        </Table2>
+        </Table>
     </div>,
 );
 
@@ -711,8 +711,8 @@ function renderName() {
 const table12Root = ReactDOM.createRoot(document.getElementById("table-12"));
 table12Root.render(
     <div style={{ height: "auto", width: "180px" }}>
-        <Table2 numRows={5} defaultRowHeight={30} enableGhostCells={true}>
+        <Table numRows={5} defaultRowHeight={30} enableGhostCells={true}>
             <Column name="Test" />
-        </Table2>
+        </Table>
     </div>,
 );

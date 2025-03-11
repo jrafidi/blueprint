@@ -50,7 +50,7 @@ import {
     RenderMode,
     RowHeaderCell,
     type StyledRegionGroup,
-    Table2,
+    Table,
     TableLoadingOption,
     TruncatedFormat,
     TruncatedPopoverMode,
@@ -321,7 +321,7 @@ const DEFAULT_STATE: MutableTableState = {
 export class MutableTable extends React.Component<{}, MutableTableState> {
     private store = new DenseGridMutableStore<any>();
 
-    private tableInstance: Table2;
+    private tableInstance: Table;
 
     private tableWrapperRef: HTMLDivElement;
 
@@ -334,7 +334,7 @@ export class MutableTable extends React.Component<{}, MutableTableState> {
     private previousTime: number;
 
     private refHandlers = {
-        table: (ref: Table2) => (this.tableInstance = ref),
+        table: (ref: Table) => (this.tableInstance = ref),
         tableWrapperRef: (ref: HTMLDivElement) => (this.tableWrapperRef = ref),
     };
 
@@ -454,7 +454,7 @@ export class MutableTable extends React.Component<{}, MutableTableState> {
 
     private renderTable() {
         return (
-            <Table2
+            <Table
                 bodyContextMenuRenderer={this.renderBodyContextMenu}
                 enableColumnHeader={this.state.enableColumnHeader}
                 enableColumnInteractionBar={this.state.showTableInteractionBar}
@@ -492,7 +492,7 @@ export class MutableTable extends React.Component<{}, MutableTableState> {
                 cellRendererDependencies={[this.state.cellContent]}
             >
                 {this.renderColumns()}
-            </Table2>
+            </Table>
         );
     }
 

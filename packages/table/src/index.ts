@@ -71,6 +71,6 @@ export {
     TableLoadingOption,
 } from "./regions";
 
-export type { TableProps } from "./tableProps";
+export type { TableProps, Table2Props } from "./tableProps";
 
-export { Table2, type Table2Props } from "./table2";
+export { Table, Table2 } from "./table";

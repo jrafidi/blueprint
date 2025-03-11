@@ -32,7 +32,7 @@ demonstrated in the above example. In these cases, the typical table props which
 (like `children`, `numRows`, `selectedRegions`, etc) may not change, so the table will not re-run its `<Cell>` children
 render methods.
 
-To work around this problem, **Table2** supports a dependency list in its `cellRendererDependencies` prop. Dependency
+To work around this problem, **Table** supports a dependency list in its `cellRendererDependencies` prop. Dependency
 changes in this list (compared using shallow equality checks) trigger a re-render of all cells in the table.
 
 In the above sortable table example, we keep a `sortedIndexMap` value in state which is updated in the column sort
@@ -121,7 +121,7 @@ given year.
 
 @### Table loading states
 
-**Table2** exposes a `loadingOptions` prop that allows you to control the loading state behavior of all column header,
+**Table** exposes a `loadingOptions` prop that allows you to control the loading state behavior of all column header,
 row header, and body cells. Try toggling the different options.
 
 @reactExample TableLoadingExample
