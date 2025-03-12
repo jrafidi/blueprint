@@ -22,12 +22,15 @@ import { Classes, DISPLAYNAME_PREFIX, type Props } from "../../common";
 import { usePrevious } from "../../hooks";
 
 import type { Panel } from "./panelTypes";
-import { PanelView2 } from "./panelView2";
+import { PanelView } from "./panelView";
+
+/** @deprecated Use `PanelStackProps` instead */
+export type PanelStack2Props<T extends Panel<object>> = PanelStackProps<T>;
 
 /**
  * @template T type union of all possible panels in this stack
  */
-export interface PanelStack2Props<T extends Panel<object>> extends Props {
+export interface PanelStackProps<T extends Panel<object>> extends Props {
     /**
      * The initial panel to show on mount. This panel cannot be removed from the
      * stack and will appear when the stack is empty.
@@ -71,21 +74,21 @@ export interface PanelStack2Props<T extends Panel<object>> extends Props {
     stack?: readonly T[];
 }
 
-interface PanelStack2Component {
+interface PanelStackComponent {
     /**
      * @template T type union of all possible panels in this stack
      */
-    <T extends Panel<object>>(props: PanelStack2Props<T>): React.JSX.Element | null;
+    <T extends Panel<object>>(props: PanelStackProps<T>): React.JSX.Element | null;
     displayName: string;
 }
 
 /**
- * Panel stack (v2) component.
+ * Panel stack component.
  *
- * @see https://blueprintjs.com/docs/#core/components/panel-stack2
+ * @see https://blueprintjs.com/docs/#core/components/panel-stack
  * @template T type union of all possible panels in this stack
  */
-export const PanelStack2: PanelStack2Component = <T extends Panel<object>>(props: PanelStack2Props<T>) => {
+export const PanelStack: PanelStackComponent = <T extends Panel<object>>(props: PanelStackProps<T>) => {
     const {
         initialPanel,
         onClose,
@@ -141,8 +144,8 @@ export const PanelStack2: PanelStack2Component = <T extends Panel<object>>(props
             const key = renderActivePanelOnly ? stack.length : layer;
 
             return (
-                <CSSTransition classNames={Classes.PANEL_STACK2} key={key} timeout={400}>
-                    <PanelView2<T>
+                <CSSTransition classNames={Classes.PANEL_STACK} key={key} timeout={400}>
+                    <PanelView<T>
                         onClose={handlePanelClose}
                         onOpen={handlePanelOpen}
                         panel={panel}
@@ -154,7 +157,7 @@ export const PanelStack2: PanelStack2Component = <T extends Panel<object>>(props
         })
         .reverse();
 
-    const classes = classNames(Classes.PANEL_STACK2, `${Classes.PANEL_STACK2}-${direction}`, props.className);
+    const classes = classNames(Classes.PANEL_STACK, `${Classes.PANEL_STACK}-${direction}`, props.className);
 
     return (
         <TransitionGroup className={classes} component="div">
@@ -162,4 +165,7 @@ export const PanelStack2: PanelStack2Component = <T extends Panel<object>>(props
         </TransitionGroup>
     );
 };
-PanelStack2.displayName = `${DISPLAYNAME_PREFIX}.PanelStack2`;
+PanelStack.displayName = `${DISPLAYNAME_PREFIX}.PanelStack`;
+
+/** @deprecated Use `PanelStack` instead */
+export const PanelStack2 = PanelStack;

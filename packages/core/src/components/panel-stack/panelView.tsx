@@ -22,7 +22,7 @@ import { Text } from "../text/text";
 
 import type { Panel, PanelProps } from "./panelTypes";
 
-export interface PanelView2Props<T extends Panel<object>> {
+export interface PanelViewProps<T extends Panel<object>> {
     /**
      * Callback invoked when the user presses the back button or a panel invokes
      * the `closePanel()` injected prop method.
@@ -45,18 +45,18 @@ export interface PanelView2Props<T extends Panel<object>> {
     showHeader: boolean;
 }
 
-interface PanelView2Component {
-    <T extends Panel<object>>(props: PanelView2Props<T>): React.JSX.Element | null;
+interface PanelViewComponent {
+    <T extends Panel<object>>(props: PanelViewProps<T>): React.JSX.Element | null;
     displayName: string;
 }
 
-export const PanelView2: PanelView2Component = <T extends Panel<object>>({
+export const PanelView: PanelViewComponent = <T extends Panel<object>>({
     panel,
     onClose,
     onOpen,
     previousPanel,
     showHeader,
-}: PanelView2Props<T>) => {
+}: PanelViewProps<T>) => {
     const hasPreviousPanel = previousPanel !== undefined;
     const handleClose = React.useCallback(() => {
         // only remove this panel if it is not the only one.
@@ -69,7 +69,7 @@ export const PanelView2: PanelView2Component = <T extends Panel<object>>({
         previousPanel === undefined ? null : (
             <Button
                 aria-label="Back"
-                className={Classes.PANEL_STACK2_HEADER_BACK}
+                className={Classes.PANEL_STACK_HEADER_BACK}
                 icon="chevron-left"
                 onClick={handleClose}
                 size="small"
@@ -97,9 +97,9 @@ export const PanelView2: PanelView2Component = <T extends Panel<object>>({
     );
 
     return (
-        <div className={Classes.PANEL_STACK2_VIEW}>
+        <div className={Classes.PANEL_STACK_VIEW}>
             {showHeader && (
-                <div className={Classes.PANEL_STACK2_HEADER}>
+                <div className={Classes.PANEL_STACK_HEADER}>
                     {/* two <span> tags here ensure title is centered as long as possible, with `flex: 1` styling */}
                     <span>{maybeBackButton}</span>
                     <Text className={Classes.HEADING} ellipsize={true} title={panel.htmlTitle}>
@@ -112,4 +112,4 @@ export const PanelView2: PanelView2Component = <T extends Panel<object>>({
         </div>
     );
 };
-PanelView2.displayName = `${DISPLAYNAME_PREFIX}.PanelView2`;
+PanelView.displayName = `${DISPLAYNAME_PREFIX}.PanelView`;

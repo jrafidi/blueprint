@@ -101,15 +101,12 @@ describe("@blueprintjs/core isomorphic rendering", () => {
             },
             PanelStack: {
                 props: {
-                    initialPanel: { component: () => null, props: {}, title: "" },
+                    initialPanel: { renderPanel: () => null, props: {}, title: "" },
                 },
                 children: "",
             },
             PanelStack2: {
-                props: {
-                    initialPanel: { renderPanel: () => null, props: {}, title: "" },
-                },
-                children: "",
+                skip: true,
             },
             Portal: {
                 className: false, // only renders in browser (`document`)
