@@ -64,12 +64,15 @@ describe("@blueprintjs/core isomorphic rendering", () => {
             HotkeysProvider: {
                 className: false,
             },
-            HotkeysTarget2: {
+            HotkeysTarget: {
                 props: {
                     hotkeys: [EXAMPLE_HOTKEY_CONFIG],
                 },
                 children: requiredChild,
                 className: false,
+            },
+            HotkeysTarget2: {
+                skip: true,
             },
             Icon: {
                 props: { icon: "build" },
