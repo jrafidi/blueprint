@@ -16,31 +16,11 @@
 
 import type { Locale } from "date-fns";
 
-import type { Boundary } from "@blueprintjs/core";
-
-export interface DateRangeInput3State {
-    isOpen?: boolean;
-    boundaryToModify?: Boundary;
-    lastFocusedField?: Boundary;
-    locale?: Locale | undefined;
-
-    formattedMinDateString?: string;
-    formattedMaxDateString?: string;
-
-    isStartInputFocused: boolean;
-    isEndInputFocused: boolean;
-
-    startInputString?: string;
-    endInputString?: string;
-
-    startHoverString?: string | null;
-    endHoverString?: string | null;
-
-    selectedEnd: Date | null;
-    selectedStart: Date | null;
-
-    shouldSelectAfterUpdate?: boolean;
-    wasLastFocusChangeDueToHover?: boolean;
-
+export interface DatePickerState {
+    displayMonth: number;
+    displayYear: number;
+    locale: Locale | undefined;
+    selectedDay: number | null;
+    value: Date | null;
     selectedShortcutIndex?: number;
 }

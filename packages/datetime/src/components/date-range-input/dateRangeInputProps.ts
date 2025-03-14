@@ -5,10 +5,12 @@
 import type { InputGroupProps, Props } from "@blueprintjs/core";
 
 import type { DateFormatProps, DatePickerBaseProps, DateRange } from "../../common";
+import type { DateFnsLocaleProps } from "../../common/dateFnsLocaleProps";
 import type { DatetimePopoverProps } from "../../common/datetimePopoverProps";
+import type { ReactDayPickerRangeProps } from "../../common/reactDayPickerProps";
 import type { DateRangeShortcut } from "../shortcuts/shortcuts";
 
-export interface DateRangeInputProps extends DatePickerBaseProps, DateFormatProps, DatetimePopoverProps, Props {
+export interface LegacyDateRangeInputProps extends DatePickerBaseProps, DateFormatProps, DatetimePopoverProps, Props {
     /**
      * Whether the start and end dates of the range can be the same day.
      * If `true`, clicking a selected date will create a one-day range.
@@ -124,3 +126,55 @@ export interface DateRangeInputProps extends DatePickerBaseProps, DateFormatProp
      */
     value?: DateRange;
 }
+
+/**
+ * Props shared between DateRangeInput v1 and v3
+ *
+ * Note that we exclude formatDate and parseDate so that we can make those optional in DateInput3 and provide a default
+ * implementation for those functions using date-fns.
+ */
+type DateRangeInputSharedProps = Omit<
+    LegacyDateRangeInputProps,
+    "dayPickerProps" | "formatDate" | "locale" | "localeUtils" | "modifiers" | "parseDate"
+>;
+
+export interface DateRangeInputProps
+    extends DateRangeInputSharedProps,
+        ReactDayPickerRangeProps,
+        DateFnsLocaleProps,
+        Partial<Omit<DateFormatProps, "locale">> {
+    /**
+     * [date-fns format](https://date-fns.org/docs/format) string used to format & parse date strings.
+     *
+     * Mutually exclusive with the `formatDate` and `parseDate` props.
+     *
+     * See date-fns [format](https://date-fns.org/docs/format).
+     */
+    dateFnsFormat?: string;
+}
+
+export type DateRangeInputDefaultProps = Required<
+    Pick<
+        DateRangeInputProps,
+        | "allowSingleDayRange"
+        | "closeOnSelection"
+        | "contiguousCalendarMonths"
+        | "dayPickerProps"
+        | "disabled"
+        | "endInputProps"
+        | "invalidDateMessage"
+        | "locale"
+        | "maxDate"
+        | "minDate"
+        | "outOfRangeMessage"
+        | "overlappingDatesMessage"
+        | "popoverProps"
+        | "selectAllOnFocus"
+        | "shortcuts"
+        | "singleMonthOnly"
+        | "startInputProps"
+    >
+>;
+
+export type DateRangeInputPropsWithDefaults = Omit<DateRangeInputProps, keyof DateRangeInputDefaultProps> &
+    DateRangeInputDefaultProps;

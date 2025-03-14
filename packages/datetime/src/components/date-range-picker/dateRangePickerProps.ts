@@ -5,9 +5,11 @@
 import type { Boundary, Props } from "@blueprintjs/core";
 
 import type { DatePickerBaseProps, DateRange } from "../../common";
+import type { DateFnsLocaleProps } from "../../common/dateFnsLocaleProps";
+import type { ReactDayPickerRangeProps } from "../../common/reactDayPickerProps";
 import type { DateRangeShortcut } from "../shortcuts/shortcuts";
 
-export interface DateRangePickerProps extends DatePickerBaseProps, Props {
+export interface LegacyDateRangePickerProps extends DatePickerBaseProps, Props {
     /**
      * Whether the start and end dates of the range can be the same day.
      * If `true`, clicking a selected date will create a one-day range.
@@ -92,3 +94,30 @@ export interface DateRangePickerProps extends DatePickerBaseProps, Props {
      */
     value?: DateRange;
 }
+
+/** Props shared between DateRangePicker v1 and v3 */
+type DateRangePickerSharedProps = Omit<
+    LegacyDateRangePickerProps,
+    "dayPickerProps" | "locale" | "localeUtils" | "modifiers"
+>;
+
+export type DateRangePickerProps = DateRangePickerSharedProps & DateFnsLocaleProps & ReactDayPickerRangeProps;
+
+export type DateRangePickerDefaultProps = Required<
+    Pick<
+        DateRangePickerProps,
+        | "allowSingleDayRange"
+        | "contiguousCalendarMonths"
+        | "dayPickerProps"
+        | "locale"
+        | "maxDate"
+        | "minDate"
+        | "reverseMonthAndYearMenus"
+        | "shortcuts"
+        | "singleMonthOnly"
+        | "timePickerProps"
+    >
+>;
+
+export type DateRangePickerPropsWithDefaults = Omit<DateRangePickerProps, keyof DateRangePickerDefaultProps> &
+    DateRangePickerDefaultProps;

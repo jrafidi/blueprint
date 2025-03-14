@@ -16,11 +16,12 @@
 
 import type { Locale } from "date-fns";
 
-export interface DatePicker3State {
-    displayMonth: number;
-    displayYear: number;
+import type { DateRange } from "../../common";
+
+export interface DateRangePickerState {
+    hoverValue?: DateRange;
     locale: Locale | undefined;
-    selectedDay: number | null;
-    value: Date | null;
+    value: DateRange;
+    time: DateRange;
     selectedShortcutIndex?: number;
 }
