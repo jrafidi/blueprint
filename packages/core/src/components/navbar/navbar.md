@@ -59,7 +59,7 @@ If your application is inside a fixed-width container (instead of spanning the e
 navbar to match by wrap your navbar groups in an element with your desired `width` and `margin: 0 auto;` to horizontally
 center it.
 
-@css navbar-container
+@reactCodeExample NavbarFixedWidthExample
 
 @## Props interface
 
@@ -70,26 +70,3 @@ center it.
 @interface NavbarHeadingProps
 
 @interface NavbarDividerProps
-
-@## CSS API
-
-<div class="@ns-callout @ns-intent-warning @ns-icon-warning-sign @ns-callout-has-body-content">
-    <h5 class="@ns-heading">
-
-Deprecated API: use `<Navbar>`
-
-</h5>
-
-CSS APIs for Blueprint components are considered deprecated, as they are verbose, error-prone, and they
-often fall out of sync as the design system is updated. You should use the React component APIs instead.
-
-</div>
-
-Use the following classes to construct a navbar:
-
--   `nav.@ns-navbar` &ndash; The parent element. Use a `<nav>` element for accessibility.
--   `.@ns-navbar-group.@ns-align-(left|right)` &ndash; Left- or right-aligned group.
--   `.@ns-navbar-heading` &ndash; Larger text for your application title.
--   `.@ns-navbar-divider` &ndash; Thin vertical line that can be placed between groups of elements.
-
-@css navbar
