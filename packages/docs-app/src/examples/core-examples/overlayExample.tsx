@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2015 Palantir Technologies, Inc. All rights reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,6 +13,13 @@
  * limitations under the License.
  */
 
+/**
+ * @fileoverview This component is DEPRECATED, and the code is frozen.
+ * All changes & bugfixes should be made to Overlay2 instead.
+ */
+
+/* eslint-disable @typescript-eslint/no-deprecated */
+
 import classNames from "classnames";
 import * as React from "react";
 
@@ -24,72 +31,60 @@ import type { BlueprintExampleData } from "../../tags/types";
 const OVERLAY_EXAMPLE_CLASS = "docs-overlay-example-transition";
 const OVERLAY_TALL_CLASS = "docs-overlay-example-tall";
 
-export const OverlayExample: React.FC<ExampleProps<BlueprintExampleData>> = props => {
-    const [autoFocus, setAutoFocus] = React.useState(true);
-    const [canEscapeKeyClose, setCanEscapeKeyClose] = React.useState(true);
-    const [canOutsideClickClose, setCanOutsideClickClose] = React.useState(true);
-    const [enforceFocus, setEnforceFocus] = React.useState(true);
-    const [hasBackdrop, setHasBackdrop] = React.useState(true);
-    const [isOpen, setIsOpen] = React.useState(false);
-    const [usePortal, setUsePortal] = React.useState(true);
-    const [useTallContent, setUseTallContent] = React.useState(false);
+export interface OverlayExampleState {
+    autoFocus: boolean;
+    canEscapeKeyClose: boolean;
+    canOutsideClickClose: boolean;
+    enforceFocus: boolean;
+    hasBackdrop: boolean;
+    isOpen: boolean;
+    usePortal: boolean;
+    useTallContent: boolean;
+}
 
-    const buttonRef = React.useRef<HTMLButtonElement>(null);
+export class OverlayExample extends React.PureComponent<ExampleProps<BlueprintExampleData>, OverlayExampleState> {
+    public state: OverlayExampleState = {
+        autoFocus: true,
+        canEscapeKeyClose: true,
+        canOutsideClickClose: true,
+        enforceFocus: true,
+        hasBackdrop: true,
+        isOpen: false,
+        usePortal: true,
+        useTallContent: false,
+    };
 
-    const handleOpen = React.useCallback(() => setIsOpen(true), [setIsOpen]);
+    private button: HTMLButtonElement;
 
-    const handleClose = React.useCallback(() => {
-        setIsOpen(false);
-        setUseTallContent(false);
-    }, [setIsOpen, setUseTallContent]);
+    private refHandlers = {
+        button: (ref: HTMLButtonElement) => (this.button = ref),
+    };
 
-    const focusButton = React.useCallback(() => buttonRef.current?.focus(), [buttonRef]);
+    private handleAutoFocusChange = handleBooleanChange(autoFocus => this.setState({ autoFocus }));
 
-    const toggleScrollButton = React.useCallback(() => setUseTallContent(use => !use), [setUseTallContent]);
+    private handleBackdropChange = handleBooleanChange(hasBackdrop => this.setState({ hasBackdrop }));
 
-    const classes = classNames(Classes.CARD, Classes.ELEVATION_4, OVERLAY_EXAMPLE_CLASS, props.data.themeName, {
-        [OVERLAY_TALL_CLASS]: useTallContent,
-    });
+    private handleEnforceFocusChange = handleBooleanChange(enforceFocus => this.setState({ enforceFocus }));
 
-    const options = (
-        <>
-            <H5>Props</H5>
-            <Switch checked={autoFocus} label="Auto focus" onChange={handleBooleanChange(setAutoFocus)} />
-            <Switch checked={enforceFocus} label="Enforce focus" onChange={handleBooleanChange(setEnforceFocus)} />
-            <Switch checked={usePortal} onChange={handleBooleanChange(setUsePortal)}>
-                Use <Code>Portal</Code>
-            </Switch>
-            <Switch
-                checked={canOutsideClickClose}
-                label="Click outside to close"
-                onChange={handleBooleanChange(setCanOutsideClickClose)}
-            />
-            <Switch
-                checked={canEscapeKeyClose}
-                label="Escape key to close"
-                onChange={handleBooleanChange(setCanEscapeKeyClose)}
-            />
-            <Switch checked={hasBackdrop} label="Has backdrop" onChange={handleBooleanChange(setHasBackdrop)} />
-        </>
-    );
+    private handleEscapeKeyChange = handleBooleanChange(canEscapeKeyClose => this.setState({ canEscapeKeyClose }));
 
-    return (
-        <Example options={options} {...props}>
-            <React.StrictMode>
-                <Button ref={buttonRef} onClick={handleOpen} text="Show overlay" />
-                <Overlay
-                    onClose={handleClose}
-                    className={Classes.OVERLAY_SCROLL_CONTAINER}
-                    {...{
-                        autoFocus,
-                        canEscapeKeyClose,
-                        canOutsideClickClose,
-                        enforceFocus,
-                        hasBackdrop,
-                        isOpen,
-                        usePortal,
-                    }}
-                >
+    private handleUsePortalChange = handleBooleanChange(usePortal => this.setState({ usePortal }));
+
+    private handleOutsideClickChange = handleBooleanChange(val => this.setState({ canOutsideClickClose: val }));
+
+    public render() {
+        const classes = classNames(
+            Classes.CARD,
+            Classes.ELEVATION_4,
+            OVERLAY_EXAMPLE_CLASS,
+            this.props.data.themeName,
+            { [OVERLAY_TALL_CLASS]: this.state.useTallContent },
+        );
+
+        return (
+            <Example options={this.renderOptions()} {...this.props}>
+                <Button ref={this.refHandlers.button} onClick={this.handleOpen} text="Show overlay" />
+                <Overlay onClose={this.handleClose} className={Classes.OVERLAY_SCROLL_CONTAINER} {...this.state}>
                     <div className={classes}>
                         <H3>I'm an Overlay!</H3>
                         <p>
@@ -109,17 +104,17 @@ export const OverlayExample: React.FC<ExampleProps<BlueprintExampleData>> = prop
                         </p>
                         <br />
                         <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-                            <Button intent={Intent.DANGER} onClick={handleClose} style={{ margin: "" }}>
+                            <Button intent={Intent.DANGER} onClick={this.handleClose} style={{ margin: "" }}>
                                 Close
                             </Button>
-                            <Button onClick={focusButton} style={{ margin: "" }}>
+                            <Button onClick={this.focusButton} style={{ margin: "" }}>
                                 Focus button
                             </Button>
                             <Button
-                                onClick={toggleScrollButton}
+                                onClick={this.toggleScrollButton}
                                 icon="double-chevron-down"
                                 endIcon="double-chevron-down"
-                                active={useTallContent}
+                                active={this.state.useTallContent}
                                 style={{ margin: "" }}
                             >
                                 Make me scroll
@@ -127,7 +122,36 @@ export const OverlayExample: React.FC<ExampleProps<BlueprintExampleData>> = prop
                         </div>
                     </div>
                 </Overlay>
-            </React.StrictMode>
-        </Example>
-    );
-};
+            </Example>
+        );
+    }
+
+    private renderOptions() {
+        const { autoFocus, enforceFocus, canEscapeKeyClose, canOutsideClickClose, hasBackdrop, usePortal } = this.state;
+        return (
+            <>
+                <H5>Props</H5>
+                <Switch checked={autoFocus} label="Auto focus" onChange={this.handleAutoFocusChange} />
+                <Switch checked={enforceFocus} label="Enforce focus" onChange={this.handleEnforceFocusChange} />
+                <Switch checked={usePortal} onChange={this.handleUsePortalChange}>
+                    Use <Code>Portal</Code>
+                </Switch>
+                <Switch
+                    checked={canOutsideClickClose}
+                    label="Click outside to close"
+                    onChange={this.handleOutsideClickChange}
+                />
+                <Switch checked={canEscapeKeyClose} label="Escape key to close" onChange={this.handleEscapeKeyChange} />
+                <Switch checked={hasBackdrop} label="Has backdrop" onChange={this.handleBackdropChange} />
+            </>
+        );
+    }
+
+    private handleOpen = () => this.setState({ isOpen: true });
+
+    private handleClose = () => this.setState({ isOpen: false, useTallContent: false });
+
+    private focusButton = () => this.button.focus();
+
+    private toggleScrollButton = () => this.setState({ useTallContent: !this.state.useTallContent });
+}

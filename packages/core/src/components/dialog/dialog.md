@@ -1,7 +1,7 @@
 @# Dialog
 
 The **Dialog** component presents content overlaid over other parts of the UI via
-[**Overlay**](#core/components/overlay).
+[**Overlay2**](#core/components/overlay2).
 
 <div class="@ns-callout @ns-intent-primary @ns-icon-info-sign @ns-callout-has-body-content">
     <h5 class="@ns-heading">Terminology note</h5>
@@ -27,17 +27,18 @@ Blueprint provides two types of dialogs:
 <div class="@ns-callout @ns-intent-warning @ns-icon-warning-sign @ns-callout-has-body-content">
     <h5 class="@ns-heading">
 
-Context provider required
+[OverlaysProvider](#core/context/overlays-provider) recommended
 
 </h5>
 
-This component renders an **Overlay** which must be rendered inside a React tree which
-contains a **[BlueprintProvider](#core/context/blueprint-provider)** or an
-**[OverlaysProvider](#core/context/overlays-provider)**.
+This component renders an **Overlay2** which works best inside a React tree which includes an
+**OverlaysProvider**. Blueprint v5.x includes a backwards-compatibile shim which allows this context
+to be optional, but it will be required in a future major version. See the full
+[migration guide](https://github.com/palantir/blueprint/wiki/Overlay2-migration) on the wiki.
 
 </div>
 
-A standard **Dialog** renders its contents in an [**Overlay**](#core/components/overlay) with a
+A standard **Dialog** renders its contents in an [**Overlay2**](#core/components/overlay2) with a
 `Classes.DIALOG` element. You can use some simple dialog markup sub-components or CSS classes
 to structure its contents:
 

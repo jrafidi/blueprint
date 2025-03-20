@@ -16,7 +16,7 @@
 
 import * as React from "react";
 
-import type { OverlayInstance } from "../../components/overlay/overlayInstance";
+import type { OverlayInstance } from "../../components/overlay2/overlayInstance";
 
 // N.B. using a mutable ref for the stack is much easier to work with in the world of hooks and FCs.
 // This matches the mutable global behavior of the old Overlay implementation in Blueprint v5. An alternative
@@ -24,6 +24,16 @@ import type { OverlayInstance } from "../../components/overlay/overlayInstance";
 // caused lots of unnecessary invalidation of `React.useCallback()` for document-level event handlers, which
 // led to memory leaks and bugs.
 export interface OverlaysContextState {
+    /**
+     * Whether the context instance is being used within a tree which has an `<OverlaysProvider>`.
+     * `useOverlayStack()` will work if this is `false` in Blueprint v5, but this will be unsupported
+     * in Blueprint v6; all applications with overlays will be required to configure a provider to
+     * manage global overlay state.
+     *
+     * @see https://github.com/palantir/blueprint/wiki/Overlay2-migration
+     */
+    hasProvider: boolean;
+
     /**
      * The application-wide global overlay stack.
      */
@@ -36,11 +46,12 @@ export interface OverlaysContextState {
  * application.
  *
  * You will likely not be using this OverlaysContext directly, it's mostly used internally by the
- * Overlay component.
+ * Overlay2 component.
  *
  * For more information, see the [OverlaysProvider documentation](https://blueprintjs.com/docs/#core/context/overlays-provider).
  */
 export const OverlaysContext = React.createContext<OverlaysContextState>({
+    hasProvider: false,
     stack: { current: [] },
 });
 
@@ -56,6 +67,6 @@ export interface OverlaysProviderProps {
  */
 export const OverlaysProvider = ({ children }: OverlaysProviderProps) => {
     const stack = React.useRef<OverlayInstance[]>([]);
-    const contextValue = React.useMemo((): OverlaysContextState => ({ stack }), [stack]);
+    const contextValue = React.useMemo(() => ({ hasProvider: true, stack }), [stack]);
     return <OverlaysContext.Provider value={contextValue}>{children}</OverlaysContext.Provider>;
 };
