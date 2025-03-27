@@ -331,14 +331,12 @@ describe("OverlayToaster", () => {
                 document.documentElement.removeChild(testsContainerElement);
             });
 
-            it("focuses inside toast container", done => {
+            it("focuses inside toast container", async () => {
                 toaster.show({ message: "focus near me" });
-                // small explicit timeout reduces flakiness of these tests
-                setTimeout(() => {
+                await waitFor(() => {
                     const toastElement = testsContainerElement.querySelector(`.${Classes.TOAST_CONTAINER}`);
                     assert.isTrue(toastElement?.contains(document.activeElement));
-                    done();
-                }, 100);
+                });
             });
         });
 
