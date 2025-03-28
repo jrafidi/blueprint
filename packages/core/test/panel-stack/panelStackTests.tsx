@@ -41,7 +41,7 @@ const TestPanel: React.FC<PanelProps<TestPanelInfo>> = props => {
 };
 
 describe("<PanelStack>", () => {
-    let containerElement: HTMLElement;
+    let testsContainerElement: HTMLElement;
     let panelStackWrapper: PanelStackWrapper<TestPanelType>;
 
     const initialPanel: Panel<TestPanelInfo> = {
@@ -56,14 +56,14 @@ describe("<PanelStack>", () => {
     };
 
     beforeEach(() => {
-        containerElement = document.createElement("div");
-        document.body.appendChild(containerElement);
+        testsContainerElement = document.createElement("div");
+        document.body.appendChild(testsContainerElement);
     });
 
     afterEach(() => {
         panelStackWrapper?.unmount();
         panelStackWrapper?.detach();
-        containerElement.remove();
+        testsContainerElement.remove();
     });
 
     describe("uncontrolled mode", () => {
@@ -317,7 +317,7 @@ describe("<PanelStack>", () => {
 
     function renderPanelStack(props: PanelStackProps<TestPanelType>): PanelStackWrapper<TestPanelType> {
         panelStackWrapper = mount(<PanelStack {...props} />, {
-            attachTo: containerElement,
+            attachTo: testsContainerElement,
         }) as PanelStackWrapper<TestPanelType>;
         panelStackWrapper.findClass = (className: string) => panelStackWrapper.find(`.${className}`).hostNodes();
         return panelStackWrapper;

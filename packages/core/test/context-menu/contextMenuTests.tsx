@@ -18,6 +18,7 @@ import { assert } from "chai";
 import classNames from "classnames";
 import { mount, type ReactWrapper } from "enzyme";
 import * as React from "react";
+import * as ReactDOM from "react-dom";
 import { spy } from "sinon";
 
 import {
@@ -53,15 +54,17 @@ const COMMON_TOOLTIP_PROPS: Partial<TooltipProps> = {
 };
 
 describe("ContextMenu", () => {
-    let containerElement: HTMLElement;
+    let containerElement: HTMLElement | undefined;
 
     beforeEach(() => {
         containerElement = document.createElement("div");
         document.body.appendChild(containerElement);
     });
-
     afterEach(() => {
-        containerElement.remove();
+        // TODO(React 18): Replace deprecated ReactDOM methods. See: https://github.com/palantir/blueprint/issues/7167
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
+        ReactDOM.unmountComponentAtNode(containerElement!);
+        containerElement!.remove();
     });
 
     describe("basic usage", () => {

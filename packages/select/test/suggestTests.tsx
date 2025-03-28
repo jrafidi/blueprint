@@ -40,7 +40,7 @@ describe("Suggest", () => {
         itemRenderer: sinon.SinonSpy<[Film, ItemRendererProps], React.JSX.Element | null>;
         onItemSelect: sinon.SinonSpy;
     };
-    let containerElement: HTMLElement;
+    let testsContainerElement: HTMLElement | undefined;
 
     beforeEach(() => {
         handlers = {
@@ -49,12 +49,12 @@ describe("Suggest", () => {
             itemRenderer: sinon.spy(renderFilm),
             onItemSelect: sinon.spy(),
         };
-        containerElement = document.createElement("div");
-        document.body.appendChild(containerElement);
+        testsContainerElement = document.createElement("div");
+        document.body.appendChild(testsContainerElement);
     });
 
     afterEach(() => {
-        containerElement.remove();
+        testsContainerElement?.remove();
     });
 
     selectComponentSuite<SuggestProps<Film>, SuggestState<Film>>(props =>
@@ -64,12 +64,12 @@ describe("Suggest", () => {
                 inputValueRenderer={inputValueRenderer}
                 popoverProps={{ isOpen: true, usePortal: false }}
             />,
-            { attachTo: containerElement },
+            { attachTo: testsContainerElement },
         ),
     );
 
     selectPopoverTestSuite<SuggestProps<Film>, SuggestState<Film>>(props =>
-        mount(<Suggest {...props} inputValueRenderer={inputValueRenderer} />, { attachTo: containerElement }),
+        mount(<Suggest {...props} inputValueRenderer={inputValueRenderer} />, { attachTo: testsContainerElement }),
     );
 
     describe("Basic behavior", () => {
@@ -345,7 +345,7 @@ describe("Suggest", () => {
 
     function suggest(props: Partial<SuggestProps<Film>> = {}) {
         return mount<Suggest<Film>>(<Suggest<Film> {...defaultProps} {...handlers} {...props} />, {
-            attachTo: containerElement,
+            attachTo: testsContainerElement,
         });
     }
 });

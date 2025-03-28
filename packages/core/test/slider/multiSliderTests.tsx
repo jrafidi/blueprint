@@ -17,6 +17,7 @@
 import { assert } from "chai";
 import { mount, type ReactWrapper } from "enzyme";
 import * as React from "react";
+import * as ReactDOM from "react-dom";
 import sinon from "sinon";
 
 import { expectPropValidationError } from "@blueprintjs/test-commons";
@@ -30,24 +31,27 @@ import { mouseUpHorizontal, simulateMovement } from "./sliderTestUtils";
 const STEP_SIZE = 20;
 
 describe("<MultiSlider>", () => {
-    let containerElement: HTMLElement;
+    let testsContainerElement: HTMLElement;
 
     let onChange: sinon.SinonSpy;
     let onRelease: sinon.SinonSpy;
 
     beforeEach(() => {
         // need an element in the document for tickSize to be a real number
-        containerElement = document.createElement("div");
+        testsContainerElement = document.createElement("div");
         // default min-max is 0-10 so there are 10 steps
-        containerElement.style.width = `${STEP_SIZE * 10}px`;
-        document.body.appendChild(containerElement);
+        testsContainerElement.style.width = `${STEP_SIZE * 10}px`;
+        document.body.appendChild(testsContainerElement);
 
         onChange = sinon.spy();
         onRelease = sinon.spy();
     });
 
     afterEach(() => {
-        containerElement.remove();
+        // TODO(React 18): Replace deprecated ReactDOM methods. See: https://github.com/palantir/blueprint/issues/7167
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
+        ReactDOM.unmountComponentAtNode(testsContainerElement);
+        testsContainerElement.remove();
     });
 
     describe("handles", () => {
@@ -65,7 +69,7 @@ describe("<MultiSlider>", () => {
                     <MultiSliderHandle value={3} className="testClass" />
                     <MultiSliderHandle value={5} />
                 </MultiSlider>,
-                { attachTo: containerElement },
+                { attachTo: testsContainerElement },
             );
             assert.lengthOf(slider.find("span.testClass"), 1);
         });
@@ -248,7 +252,7 @@ describe("<MultiSlider>", () => {
                     <MultiSliderHandle value={5} intentBefore="primary" intentAfter="danger" />
                     <MultiSliderHandle value={7} intentBefore="primary" />
                 </MultiSlider>,
-                { attachTo: containerElement },
+                { attachTo: testsContainerElement },
             );
         });
 
@@ -360,7 +364,7 @@ describe("<MultiSlider>", () => {
                 <MultiSliderHandle value={values[1]} />
                 <MultiSliderHandle value={values[2]} />
             </MultiSlider>,
-            { attachTo: containerElement },
+            { attachTo: testsContainerElement },
         );
     }
 });

@@ -15,8 +15,8 @@
  */
 
 import { expect } from "chai";
-import { mount } from "enzyme";
 import * as React from "react";
+import * as ReactDOM from "react-dom";
 
 import { Utils } from "../src";
 import { Grid } from "../src/common/grid";
@@ -55,7 +55,9 @@ describe("Locator", () => {
         // ".body" will be the scrollable region.
         containerElement = document.createElement("div");
         document.body.appendChild(containerElement);
-        mount(
+        // TODO(React 18): Replace deprecated ReactDOM methods. See: https://github.com/palantir/blueprint/issues/7167
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
+        ReactDOM.render(
             <div className="table-wrapper" style={style}>
                 <div className="body" style={style}>
                     <div className="body-client" style={style}>
@@ -63,7 +65,7 @@ describe("Locator", () => {
                     </div>
                 </div>
             </div>,
-            { attachTo: containerElement },
+            containerElement,
         );
 
         locator = new LocatorImpl(
@@ -75,7 +77,9 @@ describe("Locator", () => {
     });
 
     afterEach(() => {
-        containerElement.remove();
+        // TODO(React 18): Replace deprecated ReactDOM methods. See: https://github.com/palantir/blueprint/issues/7167
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
+        ReactDOM.unmountComponentAtNode(containerElement);
     });
 
     it("constructs", () => {

@@ -15,8 +15,8 @@
  */
 
 import { expect } from "chai";
-import { mount } from "enzyme";
 import * as React from "react";
+import * as ReactDOM from "react-dom";
 
 import * as ScrollUtils from "../../../src/common/internal/scrollUtils";
 import { type Region, Regions } from "../../../src/regions";
@@ -284,7 +284,7 @@ describe("scrollUtils", () => {
         const PARENT_WIDTH = 100;
         const PARENT_HEIGHT = 100;
 
-        let containerElement: HTMLElement;
+        let containerElement: HTMLElement | undefined;
 
         const baseStyles = { display: "block" };
         const parentStyle: React.CSSProperties = {
@@ -306,7 +306,8 @@ describe("scrollUtils", () => {
         });
 
         afterEach(() => {
-            document.body.removeChild(containerElement);
+            document.body.removeChild(containerElement!);
+            containerElement = undefined;
         });
 
         // NOTE: these tests will fail locally on OS X if you have your scrollbars set to "When scrolling"
@@ -337,13 +338,15 @@ describe("scrollUtils", () => {
         });
 
         function mountElementsWithContentSize(contentWidth: number, contentHeight: number) {
-            const wrapper = mount(
+            // HACKHACK: `as unknown as HTMLElement` cast is sketchy
+            // TODO(React 18): Replace deprecated ReactDOM methods. See: https://github.com/palantir/blueprint/issues/7167
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
+            return ReactDOM.render<React.HTMLProps<HTMLDivElement>>(
                 <div style={parentStyle}>
                     <div style={{ ...baseStyles, height: contentHeight, width: contentWidth }} />
                 </div>,
-                { attachTo: containerElement },
-            );
-            return wrapper.getDOMNode<HTMLDivElement>();
+                containerElement!,
+            ) as unknown as HTMLElement;
         }
     });
 });

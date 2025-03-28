@@ -29,15 +29,14 @@ import { OverflowList, type OverflowListProps } from "../../src/components/overf
 const ITEMS: BreadcrumbProps[] = [{ text: "1" }, { text: "2" }, { text: "3" }];
 
 describe("Breadcrumbs", () => {
-    let containerElement: HTMLElement;
+    let containerElement: HTMLElement | undefined;
 
     beforeEach(() => {
         containerElement = document.createElement("div");
         document.body.appendChild(containerElement);
     });
-
     afterEach(() => {
-        containerElement.remove();
+        containerElement?.remove();
     });
 
     it("passes through props to the OverflowList", () => {

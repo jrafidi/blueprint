@@ -18,6 +18,7 @@ import { waitFor } from "@testing-library/dom";
 import { assert } from "chai";
 import { mount } from "enzyme";
 import * as React from "react";
+import * as ReactDOM from "react-dom";
 import * as ReactDOMClient from "react-dom/client";
 import sinon, { spy } from "sinon";
 
@@ -73,19 +74,21 @@ function unmountReact16Toaster(containerElement: HTMLElement) {
     if (toasterRenderRoot == null) {
         throw new Error("No elements were found under Toaster container.");
     }
-    toasterRenderRoot.remove();
+    // TODO(React 18): Replace deprecated ReactDOM methods. See: https://github.com/palantir/blueprint/issues/7167
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    ReactDOM.unmountComponentAtNode(toasterRenderRoot);
 }
 
 describe("OverlayToaster", () => {
-    let containerElement: HTMLElement;
+    let testsContainerElement: HTMLElement;
     let toaster: Toaster;
 
     describeEach(SPECS, spec => {
         describe("with default props", () => {
             before(async () => {
-                containerElement = document.createElement("div");
-                document.documentElement.appendChild(containerElement);
-                toaster = await spec.create({}, containerElement);
+                testsContainerElement = document.createElement("div");
+                document.documentElement.appendChild(testsContainerElement);
+                toaster = await spec.create({}, testsContainerElement);
             });
 
             afterEach(() => {
@@ -93,8 +96,8 @@ describe("OverlayToaster", () => {
             });
 
             after(() => {
-                spec.cleanup(containerElement);
-                document.documentElement.removeChild(containerElement);
+                spec.cleanup(testsContainerElement);
+                document.documentElement.removeChild(testsContainerElement);
             });
 
             it("does not attach toast container to body on script load", () => {
@@ -279,14 +282,14 @@ describe("OverlayToaster", () => {
 
         describe("with maxToasts set to finite value", () => {
             before(async () => {
-                containerElement = document.createElement("div");
-                document.documentElement.appendChild(containerElement);
-                toaster = await spec.create({ maxToasts: 3 }, containerElement);
+                testsContainerElement = document.createElement("div");
+                document.documentElement.appendChild(testsContainerElement);
+                toaster = await spec.create({ maxToasts: 3 }, testsContainerElement);
             });
 
             after(() => {
-                unmountReact16Toaster(containerElement);
-                document.documentElement.removeChild(containerElement);
+                unmountReact16Toaster(testsContainerElement);
+                document.documentElement.removeChild(testsContainerElement);
             });
 
             it("does not exceed the maximum toast limit set", async () => {
@@ -318,27 +321,27 @@ describe("OverlayToaster", () => {
 
         describe("with autoFocus set to true", () => {
             before(async () => {
-                containerElement = document.createElement("div");
-                document.documentElement.appendChild(containerElement);
-                toaster = await spec.create({ autoFocus: true }, containerElement);
+                testsContainerElement = document.createElement("div");
+                document.documentElement.appendChild(testsContainerElement);
+                toaster = await spec.create({ autoFocus: true }, testsContainerElement);
             });
 
             after(() => {
-                spec.cleanup(containerElement);
-                document.documentElement.removeChild(containerElement);
+                spec.cleanup(testsContainerElement);
+                document.documentElement.removeChild(testsContainerElement);
             });
 
             it("focuses inside toast container", async () => {
                 toaster.show({ message: "focus near me" });
                 await waitFor(() => {
-                    const toastElement = containerElement.querySelector(`.${Classes.TOAST_CONTAINER}`);
+                    const toastElement = testsContainerElement.querySelector(`.${Classes.TOAST_CONTAINER}`);
                     assert.isTrue(toastElement?.contains(document.activeElement));
                 });
             });
         });
 
         it("throws an error if used within a React lifecycle method", () => {
-            containerElement = document.createElement("div");
+            testsContainerElement = document.createElement("div");
 
             class LifecycleToaster extends React.Component {
                 public render() {
@@ -347,11 +350,11 @@ describe("OverlayToaster", () => {
 
                 public componentDidMount() {
                     try {
-                        spec.create({}, containerElement);
+                        spec.create({}, testsContainerElement);
                     } catch (err: any) {
                         assert.equal(err.message, TOASTER_CREATE_NULL);
                     } finally {
-                        spec.cleanup(containerElement);
+                        spec.cleanup(testsContainerElement);
                     }
                 }
             }

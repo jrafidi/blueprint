@@ -39,7 +39,7 @@ describe("<Select>", () => {
         itemRenderer: sinon.SinonSpy<[Film, ItemRendererProps], React.JSX.Element | null>;
         onItemSelect: sinon.SinonSpy;
     };
-    let containerElement: HTMLElement;
+    let testsContainerElement: HTMLElement | undefined;
 
     beforeEach(() => {
         handlers = {
@@ -47,15 +47,15 @@ describe("<Select>", () => {
             itemRenderer: sinon.spy(renderFilm),
             onItemSelect: sinon.spy(),
         };
-        containerElement = document.createElement("div");
-        document.body.appendChild(containerElement);
+        testsContainerElement = document.createElement("div");
+        document.body.appendChild(testsContainerElement);
     });
 
     afterEach(() => {
         for (const spy of Object.values(handlers)) {
             spy.resetHistory();
         }
-        containerElement.remove();
+        testsContainerElement?.remove();
     });
 
     selectComponentSuite<SelectProps<Film>, SelectState>(props =>
@@ -63,7 +63,7 @@ describe("<Select>", () => {
     );
 
     selectPopoverTestSuite<SelectProps<Film>, SelectState>(props =>
-        mount(<Select {...props} />, { attachTo: containerElement }),
+        mount(<Select {...props} />, { attachTo: testsContainerElement }),
     );
 
     it("renders a Popover around children that contains InputGroup and items", () => {
@@ -184,7 +184,7 @@ describe("<Select>", () => {
             <Select<Film> {...defaultProps} {...handlers} {...props}>
                 <Button data-testid="target-button" text="Target" />
             </Select>,
-            { attachTo: containerElement },
+            { attachTo: testsContainerElement },
         );
         if (query !== undefined) {
             React.act(() => {

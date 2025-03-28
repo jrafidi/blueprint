@@ -164,14 +164,14 @@ describe("<MultistepDialog>", () => {
     });
 
     it("pressing enter on older step takes effect", () => {
-        const containerElement = document.createElement("div");
-        document.documentElement.appendChild(containerElement);
+        const testsContainerElement = document.createElement("div");
+        document.documentElement.appendChild(testsContainerElement);
         const dialog = mount(
             <MultistepDialog isOpen={true} usePortal={false}>
                 <DialogStep id="one" title="Step 1" panel={<Panel />} />
                 <DialogStep id="two" title="Step 2" panel={<Panel />} />
             </MultistepDialog>,
-            { attachTo: containerElement },
+            { attachTo: testsContainerElement },
         );
         assert.strictEqual(dialog.state("selectedIndex"), 0);
         findButtonWithText(dialog, "Next").simulate("click");
@@ -183,7 +183,7 @@ describe("<MultistepDialog>", () => {
         });
         assert.strictEqual(dialog.state("selectedIndex"), 0);
         dialog.unmount();
-        containerElement.remove();
+        testsContainerElement.remove();
     });
 
     it("gets by without children", () => {

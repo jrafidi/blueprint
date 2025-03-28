@@ -24,15 +24,14 @@ import { IconNames } from "@blueprintjs/icons";
 import { Classes, EntityTitle, H5 } from "../../src";
 
 describe("<EntityTitle>", () => {
-    let containerElement: HTMLElement;
+    let containerElement: HTMLElement | undefined;
 
     beforeEach(() => {
         containerElement = document.createElement("div");
         document.body.appendChild(containerElement);
     });
-
     afterEach(() => {
-        containerElement.remove();
+        containerElement?.remove();
     });
 
     it("supports className", () => {

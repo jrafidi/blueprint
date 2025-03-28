@@ -73,15 +73,15 @@ function MultipleOverlaysWrapper(props: MultipleOverlaysWrapperProps) {
 describe("<Overlay2>", () => {
     let wrapper: ReactWrapper<Overlay2Props, any>;
     let isWrapperMounted = false;
-    const containerElement = document.createElement("div");
-    document.documentElement.appendChild(containerElement);
+    const testsContainerElement = document.createElement("div");
+    document.documentElement.appendChild(testsContainerElement);
 
     /**
-     * Mount the `content` into `containerElement` and assign to local `wrapper` variable.
+     * Mount the `content` into `testsContainerElement` and assign to local `wrapper` variable.
      * Use this method in this suite instead of Enzyme's `mount` method.
      */
     function mountWrapper<T = Overlay2Props>(content: React.JSX.Element): ReactWrapper<T, any> {
-        wrapper = mount(content, { attachTo: containerElement });
+        wrapper = mount(content, { attachTo: testsContainerElement });
         isWrapperMounted = true;
         return wrapper as unknown as ReactWrapper<T, any>;
     }
@@ -96,7 +96,7 @@ describe("<Overlay2>", () => {
     });
 
     after(() => {
-        document.documentElement.removeChild(containerElement);
+        document.documentElement.removeChild(testsContainerElement);
     });
 
     it("renders its content correctly", () => {
@@ -408,7 +408,7 @@ describe("<Overlay2>", () => {
                 usePortal: false,
             };
             const multipleWrapper = mount(<MultipleOverlaysWrapper first={firstOverlay} second={secondOverlay} />, {
-                attachTo: containerElement,
+                attachTo: testsContainerElement,
             });
 
             assert.isNotNull(firstOverlayInstance.current, "ref should be set");
@@ -585,7 +585,7 @@ describe("<Overlay2>", () => {
 
             function mountMultipleWrapper(el: React.ReactElement<MultipleOverlaysWrapperProps>) {
                 multipleWrapper = mount<MultipleOverlaysWrapperProps>(el, {
-                    attachTo: containerElement,
+                    attachTo: testsContainerElement,
                 });
                 isMultipleWrapperMounted = true;
                 return multipleWrapper;
@@ -659,7 +659,7 @@ describe("<Overlay2>", () => {
                 const wrapperWithNavigation = mount(
                     <WrapperWithNavigation renderOverlayView={true} isOverlayOpen={false} />,
                     {
-                        attachTo: containerElement,
+                        attachTo: testsContainerElement,
                     },
                 );
 

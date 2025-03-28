@@ -28,17 +28,17 @@ const STEP_SIZE = 20;
 const TRACK_SELECTOR = `.${Classes.SLIDER_TRACK}`;
 
 describe("<Slider>", () => {
-    let containerElement: HTMLElement;
+    let testsContainerElement: HTMLElement;
 
     beforeEach(() => {
         // need an element in the document for tickSize to be a real number
-        containerElement = document.createElement("div");
+        testsContainerElement = document.createElement("div");
         // default min-max is 0-10 so there are 10 steps
-        containerElement.style.width = `${STEP_SIZE * 10}px`;
-        document.body.appendChild(containerElement);
+        testsContainerElement.style.width = `${STEP_SIZE * 10}px`;
+        document.body.appendChild(testsContainerElement);
     });
 
-    afterEach(() => containerElement.remove());
+    afterEach(() => testsContainerElement.remove());
 
     it("renders one interactive <Handle>", () => {
         const handles = renderSlider(<Slider />).find(Handle);
@@ -106,11 +106,13 @@ describe("<Slider>", () => {
         simulateMovement(slider, { dragTimes: 3 });
         slider.simulate("keydown", { key: "ArrowUp" });
         // track click
-        slider.find(TRACK_SELECTOR).simulate("mousedown", { target: containerElement.querySelector(TRACK_SELECTOR) });
+        slider
+            .find(TRACK_SELECTOR)
+            .simulate("mousedown", { target: testsContainerElement.querySelector(TRACK_SELECTOR) });
         assert.isTrue(eventSpy.notCalled);
     });
 
     function renderSlider(slider: React.JSX.Element) {
-        return mount(slider, { attachTo: containerElement });
+        return mount(slider, { attachTo: testsContainerElement });
     }
 });

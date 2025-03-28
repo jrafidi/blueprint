@@ -18,21 +18,24 @@ import { waitFor } from "@testing-library/dom";
 import { assert } from "chai";
 import { mount, type ReactWrapper } from "enzyme";
 import * as React from "react";
+import * as ReactDOM from "react-dom";
 import { spy } from "sinon";
 
 import { Classes, Tree, type TreeNodeInfo, type TreeProps } from "../../src";
 
 describe("<Tree>", () => {
-    let containerElement: HTMLElement;
+    let testsContainerElement: Element;
 
-    beforeEach(() => {
+    before(() => {
         // this is essentially what TestUtils.renderIntoDocument does
-        containerElement = document.createElement("div");
-        document.documentElement.appendChild(containerElement);
+        testsContainerElement = document.createElement("div");
+        document.documentElement.appendChild(testsContainerElement);
     });
 
     afterEach(() => {
-        containerElement.remove();
+        // TODO(React 18): Replace deprecated ReactDOM methods. See: https://github.com/palantir/blueprint/issues/7167
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
+        ReactDOM.unmountComponentAtNode(testsContainerElement);
     });
 
     it("renders its contents", () => {

@@ -17,6 +17,7 @@
 import { expect } from "chai";
 import { mount } from "enzyme";
 import * as React from "react";
+import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
 import sinon from "sinon";
 
@@ -558,7 +559,9 @@ describe("TableQuadrantStack", () => {
         });
 
         afterEach(() => {
-            container.remove();
+            // TODO(React 18): Replace deprecated ReactDOM methods. See: https://github.com/palantir/blueprint/issues/7167
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
+            ReactDOM.unmountComponentAtNode(container);
             onScroll.resetHistory();
         });
 
@@ -714,8 +717,13 @@ describe("TableQuadrantStack", () => {
     function renderIntoDom(element: React.JSX.Element) {
         const containerElement = document.createElement("div");
         document.body.appendChild(containerElement);
-        mount(element, { attachTo: containerElement });
-        return { container: containerElement };
+        // TODO(React 18): Replace deprecated ReactDOM methods. See: https://github.com/palantir/blueprint/issues/7167
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
+        const component = ReactDOM.render<any>(element, containerElement);
+        return {
+            component: component as TableQuadrantStack,
+            container: containerElement,
+        };
     }
 
     function renderGridBody() {

@@ -36,15 +36,15 @@ const HANDLE_PROPS: InternalHandleProps = {
 };
 
 describe("<Handle>", () => {
-    let containerElement: HTMLElement;
+    let testsContainerElement: HTMLElement;
 
     beforeEach(() => {
         // need an element in the document for tickSize to be a real number
-        containerElement = document.createElement("div");
-        document.body.appendChild(containerElement);
+        testsContainerElement = document.createElement("div");
+        document.body.appendChild(testsContainerElement);
     });
 
-    afterEach(() => containerElement.remove());
+    afterEach(() => testsContainerElement.remove());
 
     it("disabled handle never invokes event handlers", () => {
         const eventSpy = sinon.spy();
@@ -129,7 +129,7 @@ describe("<Handle>", () => {
         props: Partial<InternalHandleProps> = {},
     ): ReactWrapper<InternalHandleProps, HandleState> {
         return mount(<Handle {...HANDLE_PROPS} label={value.toString()} value={value} {...props} />, {
-            attachTo: containerElement,
+            attachTo: testsContainerElement,
         });
     }
 });

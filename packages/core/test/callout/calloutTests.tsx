@@ -23,14 +23,14 @@ import { IconNames } from "@blueprintjs/icons";
 import { Callout, Classes, H5, Intent } from "../../src";
 
 describe("<Callout>", () => {
-    let containerElement: HTMLElement;
+    let containerElement: HTMLElement | undefined;
 
     beforeEach(() => {
         containerElement = document.createElement("div");
         document.body.appendChild(containerElement);
     });
     afterEach(() => {
-        containerElement.remove();
+        containerElement?.remove();
     });
 
     it("supports className", () => {

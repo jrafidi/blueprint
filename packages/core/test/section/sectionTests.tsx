@@ -23,7 +23,7 @@ import { IconNames } from "@blueprintjs/icons";
 import { Classes, H5, H6, Section, SectionCard } from "../../src";
 
 describe("<Section>", () => {
-    let containerElement: HTMLElement;
+    let containerElement: HTMLElement | undefined;
 
     const isOpenSelector = `[data-icon="${IconNames.CHEVRON_UP}"]`;
     const isClosedSelector = `[data-icon="${IconNames.CHEVRON_DOWN}"]`;
@@ -40,9 +40,8 @@ describe("<Section>", () => {
         containerElement = document.createElement("div");
         document.body.appendChild(containerElement);
     });
-
     afterEach(() => {
-        containerElement.remove();
+        containerElement?.remove();
     });
 
     it("supports className", () => {
