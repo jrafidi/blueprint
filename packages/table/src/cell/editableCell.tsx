@@ -268,6 +268,7 @@ export class EditableCell extends React.Component<EditableCellProps, EditableCel
 
 /** @deprecated Use `EditableCell` instead */
 export const EditableCell2 = EditableCell;
+export type EditableCell2 = InstanceType<typeof EditableCell2>;
 
 /** @deprecated Use `EditableCellProps` instead */
 export type EditableCell2Props = EditableCellProps;
