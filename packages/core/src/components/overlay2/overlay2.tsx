@@ -328,6 +328,14 @@ export const Overlay2 = React.forwardRef<OverlayInstance, Overlay2Props>((props,
             return;
         }
 
+        // Only add listener if this overlay is the most recent one
+        const lastOpened = getLastOpened();
+        const isTopOverlay = lastOpened?.id === id;
+
+        if (!isTopOverlay) {
+            return;
+        }
+
         // Focus events do not bubble, but setting useCapture allows us to listen in and execute
         // our handler before all others
         document.addEventListener("focus", handleDocumentFocus, /* useCapture */ true);
@@ -335,7 +343,7 @@ export const Overlay2 = React.forwardRef<OverlayInstance, Overlay2Props>((props,
         return () => {
             document.removeEventListener("focus", handleDocumentFocus, /* useCapture */ true);
         };
-    }, [handleDocumentFocus, enforceFocus, isOpen]);
+    }, [handleDocumentFocus, enforceFocus, isOpen, getLastOpened, id]);
 
     const overlayWillCloseRef = React.useRef(overlayWillClose);
     overlayWillCloseRef.current = overlayWillClose;
