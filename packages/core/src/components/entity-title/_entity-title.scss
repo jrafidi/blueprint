@@ -7,7 +7,7 @@
 .#{$ns}-entity-title {
   align-items: center;
   display: flex;
-  gap: $pt-spacing * 1.75;
+  gap: $pt-spacing * 2;
   min-width: 0;
 
   &.#{$ns}-fill {
@@ -38,13 +38,13 @@
     align-items: center;
     display: flex;
     flex-direction: row;
-    gap: $pt-spacing * 1.25;
+    gap: $pt-spacing;
   }
 
   &-tags-container {
     display: flex;
     gap: $pt-spacing * 0.5;
-    margin-left: $pt-spacing * 1.25;
+    margin-left: $pt-spacing;
   }
 
   &-title {
@@ -79,7 +79,7 @@
   &-heading-h1,
   &-heading-h2,
   &-heading-h3 {
-    gap: $pt-spacing * 3.75;
+    gap: $pt-spacing * 4;
 
     .#{$ns}-entity-title-status-tag {
       margin-left: $pt-spacing * 2.5;
