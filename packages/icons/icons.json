@@ -4793,5 +4793,12 @@
         "tags": "terminal, coding, code block, command line, alert, warning",
         "group": "interface",
         "codepoint": 62381
+    },
+    {
+        "displayName": "Wrap lines",
+        "iconName": "wrap-lines",
+        "tags": "wrap lines, wrap, text, arrow, return ",
+        "group": "editor",
+        "codepoint": 62382
     }
 ]
