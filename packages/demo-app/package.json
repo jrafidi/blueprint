@@ -1,6 +1,6 @@
 {
     "name": "@blueprintjs/demo-app",
-    "version": "6.3.3",
+    "version": "6.3.4",
     "description": "Blueprint Demo App",
     "private": true,
     "scripts": {
