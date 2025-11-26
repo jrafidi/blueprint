@@ -55,6 +55,12 @@ export interface QueryListProps<T> extends ListItemsProps<T> {
     onKeyUp?: React.KeyboardEventHandler<HTMLElement>;
 
     /**
+     * ID prefix for generating unique IDs for list options.
+     * Defaults to a generated ID.
+     */
+    listId?: string;
+
+    /**
      * Customize rendering of the component.
      * Receives an object with props that should be applied to elements as necessary.
      */
@@ -80,6 +86,16 @@ export interface QueryListRendererProps<T> // Omit `createNewItem`, because it's
      * perhaps because the user clicked it.
      */
     handleItemSelect: (item: T, event?: React.SyntheticEvent<HTMLElement>) => void;
+
+    /**
+     * ID of the currently active item for aria-activedescendant.
+     */
+    activeItemId?: string;
+
+    /**
+     * ID of the list container for ARIA relationships.
+     */
+    listId: string;
 
     /**
      * Handler that should be invoked when the user pastes one or more values.
@@ -117,6 +133,12 @@ export interface QueryListRendererProps<T> // Omit `createNewItem`, because it's
      */
     handleQueryChange: React.ChangeEventHandler<HTMLInputElement>;
 
+    /**
+     * Blur handler to manage visual focus state for accessibility.
+     * Attach this to the combobox input element.
+     */
+    handleInputBlur: React.FocusEventHandler<HTMLInputElement>;
+
     /** Rendered elements returned from `itemListRenderer` prop. */
     itemList: React.ReactNode;
 }
@@ -139,6 +161,9 @@ export interface QueryListState<T> {
 
     /** The current query string. */
     query: string;
+
+    /** Whether the listbox has visual focus (used for proper screen reader announcements). */
+    listboxHasVisualFocus: boolean;
 }
 
 /**
@@ -162,6 +187,8 @@ export class QueryList<T> extends AbstractComponent<QueryListProps<T>, QueryList
     private itemsParentRef?: HTMLElement | null;
 
     private itemRefs = new Map<number, HTMLElement>();
+
+    private listId: string;
 
     private refHandlers = {
         itemsParent: (ref: HTMLElement | null) => (this.itemsParentRef = ref),
@@ -199,6 +226,9 @@ export class QueryList<T> extends AbstractComponent<QueryListProps<T>, QueryList
     public constructor(props: QueryListProps<T>) {
         super(props);
 
+        // Generate unique ID for accessibility
+        this.listId = props.listId ?? Utils.uniqueId("bp-query-list");
+
         const { query = "" } = props;
         const createNewItem = props.createNewItemFromQuery?.(query);
         const filteredItems = getFilteredItems(query, props);
@@ -210,6 +240,7 @@ export class QueryList<T> extends AbstractComponent<QueryListProps<T>, QueryList
                     : (props.initialActiveItem ?? getFirstEnabledItem(filteredItems, props.itemDisabled)),
             createNewItem,
             filteredItems,
+            listboxHasVisualFocus: false, // Initially false, becomes true when user navigates with arrow keys
             query,
         };
     }
@@ -217,9 +248,15 @@ export class QueryList<T> extends AbstractComponent<QueryListProps<T>, QueryList
     public render() {
         const { className, items, renderer, itemListRenderer = this.renderItemList, menuProps } = this.props;
         const { createNewItem, ...spreadableState } = this.state;
+
+        // Generate ID for active item
+        const activeItemId = this.getActiveItemId();
+
         return renderer({
             ...spreadableState,
+            activeItemId,
             className,
+            handleInputBlur: this.handleInputBlur,
             handleItemSelect: this.handleItemSelect,
             handleKeyDown: this.handleKeyDown,
             handleKeyUp: this.handleKeyUp,
@@ -229,10 +266,17 @@ export class QueryList<T> extends AbstractComponent<QueryListProps<T>, QueryList
                 ...spreadableState,
                 items,
                 itemsParentRef: this.refHandlers.itemsParent,
-                menuProps,
+                menuProps: {
+                    ...menuProps,
+                    // Hide listbox from screen readers when typing (only show when navigating with arrows)
+                    // This prevents screen readers from announcing fragmented updates during typing/backspacing
+                    id: this.listId,
+                    ...(!this.state.listboxHasVisualFocus && { inert: "" }),
+                },
                 renderCreateItem: this.renderCreateItemMenuItem,
                 renderItem: this.renderItem,
             }),
+            listId: this.listId,
         });
     }
 
@@ -382,9 +426,14 @@ export class QueryList<T> extends AbstractComponent<QueryListProps<T>, QueryList
                 disabled: isItemDisabled(item, index, this.props.itemDisabled),
                 matchesPredicate: filteredItems.indexOf(item) >= 0,
             };
+
+            // Generate accessibility attributes
+            const itemId = `${this.listId}-item-${index}`;
+
             return this.props.itemRenderer(item, {
                 handleClick: e => this.handleItemSelect(item, e),
                 handleFocus: () => this.setActiveItem(item),
+                id: itemId,
                 index,
                 modifiers,
                 query,
@@ -522,6 +571,8 @@ export class QueryList<T> extends AbstractComponent<QueryListProps<T>, QueryList
             const direction = Utils.getArrowKeyDirection(event, ["ArrowUp"], ["ArrowDown"]);
             if (direction !== undefined) {
                 event.preventDefault();
+                // Set visual focus when navigating with arrow keys
+                this.setState({ listboxHasVisualFocus: true });
                 const nextActiveItem = this.getNextActiveItem(direction);
                 if (nextActiveItem != null) {
                     this.setActiveItem(nextActiveItem);
@@ -555,8 +606,17 @@ export class QueryList<T> extends AbstractComponent<QueryListProps<T>, QueryList
         onKeyUp?.(event);
     };
 
+    private handleInputBlur = (_event: React.FocusEvent<HTMLInputElement>) => {
+        // When input loses focus, clear visual focus state
+        this.setState({ listboxHasVisualFocus: false });
+    };
+
     private handleInputQueryChange = (event?: React.ChangeEvent<HTMLInputElement>) => {
         const query = event == null ? "" : event.target.value;
+
+        // When user starts typing, clear visual focus state to return to input-focused mode
+        this.setState({ listboxHasVisualFocus: false });
+
         this.setQuery(query);
         this.props.onQueryChange?.(query, event);
     };
@@ -616,6 +676,24 @@ export class QueryList<T> extends AbstractComponent<QueryListProps<T>, QueryList
         if (this.props.resetOnSelect) {
             this.setQuery("", true);
         }
+    }
+
+    /** Generate unique ID for the currently active item */
+    private getActiveItemId(): string | undefined {
+        const { activeItem, listboxHasVisualFocus } = this.state;
+
+        // Only return ID when navigating with arrow keys (visual focus)
+        // Not when typing, to avoid screen readers moving their virtual cursor away from the input
+        if (!listboxHasVisualFocus || activeItem == null) {
+            return undefined;
+        }
+
+        if (isCreateNewItem(activeItem)) {
+            return `${this.listId}-create-item`;
+        }
+
+        const activeIndex = this.getActiveIndex();
+        return activeIndex >= 0 ? `${this.listId}-item-${activeIndex}` : undefined;
     }
 }
 
