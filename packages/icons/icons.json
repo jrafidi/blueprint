@@ -4858,8 +4858,8 @@
         "codepoint": 62390
     },
     {
-        "displayName": "End fork",
-        "iconName": "end-fork",
+        "displayName": "Fork end",
+        "iconName": "fork-end",
         "tags": "merge, join",
         "group": "action",
         "codepoint": 62391
